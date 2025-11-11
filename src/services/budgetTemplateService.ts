@@ -178,7 +178,8 @@ export async function getBudgetTemplateData(budgetId: string): Promise<BudgetTem
   );
 
   // Mapear items para procedimentos
-  const procedurePlaceholders = mapItemsToProcedures(budget.items || []);
+  const itemsArray = Array.isArray(budget.items) ? (budget.items as any[]) : [];
+  const procedurePlaceholders = mapItemsToProcedures(itemsArray);
 
   // Montar objeto com todos os placeholders
   const templateData: BudgetTemplateData = {

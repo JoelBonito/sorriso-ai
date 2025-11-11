@@ -155,41 +155,43 @@ export async function getConfig(): Promise<Config | null> {
   if (error) throw error;
   if (!data) return null;
 
+  const row: any = data;
+
   return {
-    apiKey: data.api_key,
-    backendUrl: data.backend_url,
-    temperature: Number(data.temperature),
-    topK: data.top_k,
-    topP: Number(data.top_p),
-    maxTokens: data.max_tokens,
-    promptTemplate: data.prompt_template,
+    apiKey: row.api_key,
+    backendUrl: row.backend_url,
+    temperature: Number(row.temperature),
+    topK: row.top_k,
+    topP: Number(row.top_p),
+    maxTokens: row.max_tokens,
+    promptTemplate: row.prompt_template,
     
     // Dados do usuário
-    userName: data.user_name || undefined,
-    userPhone: data.user_phone || undefined,
-    userEmail: data.user_email || undefined,
+    userName: row.user_name || undefined,
+    userPhone: row.user_phone || undefined,
+    userEmail: row.user_email || undefined,
     
     // Dados da clínica
-    clinicName: data.clinic_name || undefined,
-    clinicAddress: data.clinic_address || undefined,
-    clinicPhone: data.clinic_phone || undefined,
-    clinicEmail: data.clinic_email || undefined,
-    clinicCnpj: data.clinic_cnpj || undefined,
-    clinicDentistName: data.clinic_dentist_name || undefined,
-    clinicCro: data.clinic_cro || undefined,
-    clinicLogoUrl: data.clinic_logo_url || undefined,
-    clinicZipCode: data.clinic_zip_code || undefined,
-    clinicCity: data.clinic_city || undefined,
-    clinicState: data.clinic_state || undefined,
+    clinicName: row.clinic_name || undefined,
+    clinicAddress: row.clinic_address || undefined,
+    clinicPhone: row.clinic_phone || undefined,
+    clinicEmail: row.clinic_email || undefined,
+    clinicCnpj: row.clinic_cnpj || undefined,
+    clinicDentistName: row.clinic_dentist_name || undefined,
+    clinicCro: row.clinic_cro || undefined,
+    clinicLogoUrl: row.clinic_logo_url || undefined,
+    clinicZipCode: row.clinic_zip_code || undefined,
+    clinicCity: row.clinic_city || undefined,
+    clinicState: row.clinic_state || undefined,
 
     // Condições de pagamento
-    paymentConfig: data.payment_config ? {
-      discount_cash: data.payment_config.discount_cash ?? 10,
-      discount_pix: data.payment_config.discount_pix ?? 5,
-      max_installments: data.payment_config.max_installments ?? 12,
-      allow_credit_card: data.payment_config.allow_credit_card ?? true,
-      allow_debit_card: data.payment_config.allow_debit_card ?? true,
-      allow_boleto: data.payment_config.allow_boleto ?? true,
+    paymentConfig: row.payment_config ? {
+      discount_cash: row.payment_config.discount_cash ?? 10,
+      discount_pix: row.payment_config.discount_pix ?? 5,
+      max_installments: row.payment_config.max_installments ?? 12,
+      allow_credit_card: row.payment_config.allow_credit_card ?? true,
+      allow_debit_card: row.payment_config.allow_debit_card ?? true,
+      allow_boleto: row.payment_config.allow_boleto ?? true,
     } : {
       discount_cash: 10,
       discount_pix: 5,
@@ -200,9 +202,9 @@ export async function getConfig(): Promise<Config | null> {
     },
 
     // Módulos
-    crmEnabled: data.crm_enabled !== false,
-    facetsSimulatorEnabled: data.facets_simulator_enabled ?? true,
-    whiteningSimulatorEnabled: data.whitening_simulator_enabled ?? true,
+    crmEnabled: row.crm_enabled !== false,
+    facetsSimulatorEnabled: row.facets_simulator_enabled ?? true,
+    whiteningSimulatorEnabled: row.whitening_simulator_enabled ?? true,
   };
 }
 
