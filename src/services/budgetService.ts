@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { addDays } from 'date-fns';
-import { generateBudgetNumber, generateManualBudgetPDF } from './pdfService';
+import { generateBudgetNumber } from './pdfService';
 import { notifyBudgetStatusChanged } from './notificationService';
 
 // FASE 3: Definir type union explícito para BudgetStatus
@@ -404,20 +404,7 @@ export async function createManualBudget(
   // Gerar número de orçamento
   const budgetNumber = generateBudgetNumber();
 
-  // Gerar PDF
-  const pdfUrl = await generateManualBudgetPDF({
-    budgetNumber,
-    patientName: patient.name,
-    patientPhone: patient.phone,
-    date: new Date(),
-    items: itemsWithTotals,
-    subtotal,
-    desconto_percentual: discount,
-    desconto_valor: discountAmount,
-    total: finalPrice
-  });
-
-  // Salvar no banco de dados
+  // Salvar no banco de dados primeiro (sem PDF)
   const { data, error } = await supabase
     .from('budgets')
     .insert([
@@ -433,7 +420,6 @@ export async function createManualBudget(
         discount_percentage: discount,
         discount_amount: discountAmount,
         final_price: finalPrice,
-        pdf_url: pdfUrl,
         valid_until: addDays(new Date(), 30).toISOString().split('T')[0],
         status: 'pending'
       }
@@ -451,7 +437,18 @@ export async function createManualBudget(
     throw error;
   }
   if (!data) throw new Error('Falha ao criar orçamento manual');
-  
+
+  // Gerar PDF usando Edge Function (PDFShift)
+  console.log('→ Gerando PDF do orçamento manual via Edge Function (PDFShift)...');
+  try {
+    await generateBudgetPDF(data.id);
+    console.log('✓ PDF do orçamento manual gerado com sucesso');
+  } catch (pdfError) {
+    console.error('❌ Erro ao gerar PDF do orçamento manual:', pdfError);
+    // Não falhar a criação do orçamento se o PDF falhar
+    // O PDF pode ser gerado manualmente depois
+  }
+
   return {
     ...data,
     status: data.status as Budget['status'],
