@@ -540,8 +540,7 @@ async function htmlToPdf(html: string): Promise<Uint8Array> {
           left: '15mm',
           right: '15mm'
         },
-        use_print: true,
-        wait_for: 'networkidle0' // Espera todas as imagens carregarem
+        use_print: true
       })
     })
 
@@ -593,8 +592,7 @@ async function htmlToPdf(html: string): Promise<Uint8Array> {
           source: html,
           format: 'A4',
           margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' },
-          use_print: true,
-          wait_for: 'networkidle0'
+          use_print: true
         })
       })
 
