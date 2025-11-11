@@ -196,29 +196,87 @@ function generateTemplateData(budget: any, userConfig: any): Record<string, stri
   return data
 }
 
+function processConditionals(template: string, data: Record<string, string>): string {
+  let processed = template
+
+  // Definir condições e suas validações
+  const conditions = {
+    IF_HAS_LOGO: () => data.CLINIC_LOGO_URL && data.CLINIC_LOGO_URL.trim() !== '',
+    IF_HAS_SIMULATION: () =>
+      (data.SIMULATION_BEFORE_IMAGE && data.SIMULATION_BEFORE_IMAGE.trim() !== '') ||
+      (data.SIMULATION_AFTER_IMAGE && data.SIMULATION_AFTER_IMAGE.trim() !== ''),
+  }
+
+  // Processar cada tipo de condicional
+  Object.entries(conditions).forEach(([conditionName, validator]) => {
+    const startTag = `{{${conditionName}}}`
+    const endTag = `{{END_${conditionName}}}`
+    const regex = new RegExp(`${startTag}([\\s\\S]*?)${endTag}`, 'g')
+
+    processed = processed.replace(regex, (match, content) => {
+      return validator() ? content : ''
+    })
+  })
+
+  return processed
+}
+
 function fillTemplate(template: string, data: Record<string, string>): string {
   let filled = template
+
+  // Substituir placeholders
   Object.entries(data).forEach(([key, value]) => {
     const regex = new RegExp(`{{${key}}}`, 'g')
     filled = filled.replace(regex, value)
   })
+
+  // Processar condicionais
+  filled = processConditionals(filled, data)
+
   // Remover linhas vazias de procedimentos
   filled = filled.replace(/^\|.*\|\s*-\s*\|\s*-\s*\|\s*-\s*\|\s*-\s*\|\s*-\s*\|.*$/gm, '')
+
   return filled
 }
 
 async function loadTemplate(): Promise<string> {
-  // Template inline por enquanto
-  // TODO: Carregar de um storage ou arquivo
+  // Template inline simplificado para Edge Function
+  // TODO: Carregar template completo de storage ou usar o do repositório
   return `# ORÇAMENTO ODONTOLÓGICO
+
+---
+
+{{IF_HAS_LOGO}}
+<div style="text-align: center; page-break-inside: avoid;">
+  <img src="{{CLINIC_LOGO_URL}}" alt="Logo" style="max-height: 80px; margin-bottom: 15px;">
+</div>
+{{END_IF_HAS_LOGO}}
 
 ## {{CLINIC_NAME}}
 
 **CNPJ:** {{CLINIC_CNPJ}}
 **Endereço:** {{CLINIC_ADDRESS}}
+**CEP:** {{CLINIC_ZIP_CODE}} - {{CLINIC_CITY}}/{{CLINIC_STATE}}
 **Telefone:** {{CLINIC_PHONE}} | **E-mail:** {{CLINIC_EMAIL}}
 
 ---
+
+{{IF_HAS_SIMULATION}}
+## SIMULAÇÃO DO TRATAMENTO
+
+<div style="display: flex; justify-content: space-around; margin: 20px 0;">
+  <div style="text-align: center; flex: 1;">
+    <img src="{{SIMULATION_BEFORE_IMAGE}}" alt="Antes" style="max-width: 350px; height: auto;">
+    <p><strong>ANTES</strong></p>
+  </div>
+  <div style="text-align: center; flex: 1;">
+    <img src="{{SIMULATION_AFTER_IMAGE}}" alt="Depois" style="max-width: 350px; height: auto;">
+    <p><strong>DEPOIS</strong></p>
+  </div>
+</div>
+
+---
+{{END_IF_HAS_SIMULATION}}
 
 ## 📋 DADOS DO ORÇAMENTO
 
@@ -238,11 +296,18 @@ async function loadTemplate(): Promise<string> {
 
 ## PROCEDIMENTOS PROPOSTOS
 
-| Procedimento | Dente(s) | Qtd | Valor Unit. | Subtotal |
-|-------------|----------|-----|-------------|----------|
-| {{PROCEDURE_1_NAME}} | {{PROCEDURE_1_TEETH}} | {{PROCEDURE_1_QTY}} | R$ {{PROCEDURE_1_PRICE}} | R$ {{PROCEDURE_1_TOTAL}} |
-| {{PROCEDURE_2_NAME}} | {{PROCEDURE_2_TEETH}} | {{PROCEDURE_2_QTY}} | R$ {{PROCEDURE_2_PRICE}} | R$ {{PROCEDURE_2_TOTAL}} |
-| {{PROCEDURE_3_NAME}} | {{PROCEDURE_3_TEETH}} | {{PROCEDURE_3_QTY}} | R$ {{PROCEDURE_3_PRICE}} | R$ {{PROCEDURE_3_TOTAL}} |
+| Cód. | Procedimento | Dente(s) | Qtd | Valor Unit. | Subtotal |
+|:----:|-------------|:--------:|:---:|------------:|---------:|
+| 001 | {{PROCEDURE_1_NAME}} | {{PROCEDURE_1_TEETH}} | {{PROCEDURE_1_QTY}} | R$ {{PROCEDURE_1_PRICE}} | R$ {{PROCEDURE_1_TOTAL}} |
+| 002 | {{PROCEDURE_2_NAME}} | {{PROCEDURE_2_TEETH}} | {{PROCEDURE_2_QTY}} | R$ {{PROCEDURE_2_PRICE}} | R$ {{PROCEDURE_2_TOTAL}} |
+| 003 | {{PROCEDURE_3_NAME}} | {{PROCEDURE_3_TEETH}} | {{PROCEDURE_3_QTY}} | R$ {{PROCEDURE_3_PRICE}} | R$ {{PROCEDURE_3_TOTAL}} |
+| 004 | {{PROCEDURE_4_NAME}} | {{PROCEDURE_4_TEETH}} | {{PROCEDURE_4_QTY}} | R$ {{PROCEDURE_4_PRICE}} | R$ {{PROCEDURE_4_TOTAL}} |
+| 005 | {{PROCEDURE_5_NAME}} | {{PROCEDURE_5_TEETH}} | {{PROCEDURE_5_QTY}} | R$ {{PROCEDURE_5_PRICE}} | R$ {{PROCEDURE_5_TOTAL}} |
+| 006 | {{PROCEDURE_6_NAME}} | {{PROCEDURE_6_TEETH}} | {{PROCEDURE_6_QTY}} | R$ {{PROCEDURE_6_PRICE}} | R$ {{PROCEDURE_6_TOTAL}} |
+| 007 | {{PROCEDURE_7_NAME}} | {{PROCEDURE_7_TEETH}} | {{PROCEDURE_7_QTY}} | R$ {{PROCEDURE_7_PRICE}} | R$ {{PROCEDURE_7_TOTAL}} |
+| 008 | {{PROCEDURE_8_NAME}} | {{PROCEDURE_8_TEETH}} | {{PROCEDURE_8_QTY}} | R$ {{PROCEDURE_8_PRICE}} | R$ {{PROCEDURE_8_TOTAL}} |
+| 009 | {{PROCEDURE_9_NAME}} | {{PROCEDURE_9_TEETH}} | {{PROCEDURE_9_QTY}} | R$ {{PROCEDURE_9_PRICE}} | R$ {{PROCEDURE_9_TOTAL}} |
+| 010 | {{PROCEDURE_10_NAME}} | {{PROCEDURE_10_TEETH}} | {{PROCEDURE_10_QTY}} | R$ {{PROCEDURE_10_PRICE}} | R$ {{PROCEDURE_10_TOTAL}} |
 
 ---
 
@@ -251,6 +316,14 @@ async function loadTemplate(): Promise<string> {
 **Subtotal:** R$ {{SUBTOTAL}}
 **Desconto:** R$ {{DISCOUNT}}
 **VALOR TOTAL:** **R$ {{TOTAL}}**
+
+---
+
+## CONDIÇÕES DE PAGAMENTO
+
+**Formas de Pagamento:** Dinheiro ({{DISCOUNT_CASH}}% desc.) | PIX ({{DISCOUNT_PIX}}% desc.) | Cartão (até {{MAX_INSTALLMENTS}}x)
+
+**À vista:** R$ {{CASH_PRICE}} | **Parcelado:** {{MAX_INSTALLMENTS}}x de R$ {{INSTALLMENT_VALUE}}
 
 ---
 
@@ -283,12 +356,139 @@ function markdownToHtml(markdown: string): string {
     <html>
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h1 { color: #333; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        td, th { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
+        /* Reset e configuração básica */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        /* Configuração A4 */
+        @page {
+          size: A4;
+          margin: 2cm 1.5cm;
+        }
+
+        body {
+          font-family: Arial, 'Helvetica Neue', sans-serif;
+          font-size: 11pt;
+          line-height: 1.5;
+          color: #333;
+          background: white;
+          padding: 20px;
+          max-width: 210mm;
+          margin: 0 auto;
+        }
+
+        /* Tipografia */
+        h1 {
+          font-size: 24pt;
+          color: #2c3e50;
+          margin-bottom: 15px;
+          text-align: center;
+          page-break-after: avoid;
+        }
+
+        h2 {
+          font-size: 14pt;
+          color: #34495e;
+          margin: 20px 0 10px 0;
+          border-bottom: 2px solid #3498db;
+          padding-bottom: 5px;
+          page-break-after: avoid;
+        }
+
+        h3 {
+          font-size: 12pt;
+          color: #555;
+          margin: 15px 0 8px 0;
+          page-break-after: avoid;
+        }
+
+        p {
+          margin: 8px 0;
+        }
+
+        /* Tabelas */
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 15px 0;
+          font-size: 10pt;
+          page-break-inside: avoid;
+        }
+
+        td, th {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+        }
+
+        th {
+          background-color: #f8f9fa;
+          font-weight: bold;
+          color: #2c3e50;
+        }
+
+        /* Imagens */
+        img {
+          max-width: 100%;
+          height: auto;
+          display: block;
+          page-break-inside: avoid;
+        }
+
+        /* Divisores */
+        hr {
+          border: none;
+          border-top: 1px solid #ddd;
+          margin: 20px 0;
+        }
+
+        /* Listas */
+        ul, ol {
+          margin: 10px 0 10px 20px;
+        }
+
+        li {
+          margin: 5px 0;
+        }
+
+        /* Impressão */
+        @media print {
+          body {
+            padding: 0;
+          }
+
+          h1, h2, h3, h4, h5, h6 {
+            page-break-after: avoid;
+          }
+
+          table, img, div {
+            page-break-inside: avoid;
+          }
+
+          a {
+            color: #000;
+            text-decoration: none;
+          }
+        }
+
+        /* Cores e destaques */
+        strong {
+          font-weight: 600;
+          color: #2c3e50;
+        }
+
+        /* Grid de 2 colunas */
+        .grid-2-cols {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          page-break-inside: avoid;
+        }
       </style>
     </head>
     <body>

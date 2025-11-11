@@ -233,6 +233,36 @@ export async function getBudgetTemplateData(budgetId: string): Promise<BudgetTem
 }
 
 /**
+ * Processa condicionais no template (remove seções se dados não existem)
+ */
+function processConditionals(template: string, data: BudgetTemplateData): string {
+  let processed = template;
+
+  // Definir condições e suas validações
+  const conditions = {
+    IF_HAS_LOGO: () => data.CLINIC_LOGO_URL && data.CLINIC_LOGO_URL.trim() !== '',
+    IF_HAS_SIMULATION: () =>
+      (data.SIMULATION_BEFORE_IMAGE && data.SIMULATION_BEFORE_IMAGE.trim() !== '') ||
+      (data.SIMULATION_AFTER_IMAGE && data.SIMULATION_AFTER_IMAGE.trim() !== ''),
+  };
+
+  // Processar cada tipo de condicional
+  Object.entries(conditions).forEach(([conditionName, validator]) => {
+    const startTag = `{{${conditionName}}}`;
+    const endTag = `{{END_${conditionName}}}`;
+    const regex = new RegExp(`${startTag}([\\s\\S]*?)${endTag}`, 'g');
+
+    processed = processed.replace(regex, (match, content) => {
+      // Se a condição é atendida, mantém o conteúdo (sem as tags)
+      // Se não, remove tudo
+      return validator() ? content : '';
+    });
+  });
+
+  return processed;
+}
+
+/**
  * Preenche template Markdown com dados
  */
 export function fillTemplate(template: string, data: BudgetTemplateData): string {
@@ -243,6 +273,9 @@ export function fillTemplate(template: string, data: BudgetTemplateData): string
     const regex = new RegExp(`{{${key}}}`, 'g');
     filled = filled.replace(regex, value);
   });
+
+  // Processar condicionais (remover seções vazias)
+  filled = processConditionals(filled, data);
 
   // Remover linhas de procedimentos vazios (que contêm apenas hífens)
   filled = filled.replace(/^\|.*\|\s*-\s*\|\s*-\s*\|\s*-\s*\|\s*-\s*\|\s*-\s*\|.*$/gm, '');
