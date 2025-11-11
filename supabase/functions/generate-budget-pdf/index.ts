@@ -499,13 +499,108 @@ function markdownToHtml(markdown: string): string {
 }
 
 async function htmlToPdf(html: string): Promise<Uint8Array> {
-  // IMPLEMENTAÇÃO TEMPORÁRIA
-  // Em produção, use uma API de conversão HTML->PDF ou Puppeteer
+  // Conversão HTML para PDF usando PDFShift
+  const PDFSHIFT_API_KEY = Deno.env.get('PDFSHIFT_API_KEY')
 
-  // Por enquanto, retorna HTML como "PDF" (apenas para teste)
-  // TODO: Integrar com serviço real de conversão PDF
-  const encoder = new TextEncoder()
-  return encoder.encode(html)
+  if (!PDFSHIFT_API_KEY) {
+    console.error('PDFSHIFT_API_KEY não configurada')
+    throw new Error('PDFSHIFT_API_KEY não está configurada. Configure usando: supabase secrets set PDFSHIFT_API_KEY=your_key')
+  }
+
+  console.log('Iniciando conversão HTML→PDF com PDFShift...')
+  const startTime = Date.now()
+
+  try {
+    const response = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${btoa(`api:${PDFSHIFT_API_KEY}`)}`
+      },
+      body: JSON.stringify({
+        source: html,
+        sandbox: false,
+        landscape: false,
+        format: 'A4',
+        margin: {
+          top: '20mm',
+          bottom: '20mm',
+          left: '15mm',
+          right: '15mm'
+        },
+        use_print: true,
+        wait_for: 'networkidle0', // Espera todas as imagens carregarem
+        viewport: {
+          width: 794,  // A4 width em pixels (96 DPI)
+          height: 1123 // A4 height em pixels (96 DPI)
+        }
+      })
+    })
+
+    const duration = Date.now() - startTime
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('PDFShift error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      })
+
+      // Parse error JSON se possível
+      try {
+        const errorJson = JSON.parse(errorText)
+        throw new Error(`PDFShift: ${errorJson.error || errorJson.message || errorText}`)
+      } catch {
+        throw new Error(`PDFShift HTTP ${response.status}: ${errorText}`)
+      }
+    }
+
+    const pdfBuffer = await response.arrayBuffer()
+    const pdfArray = new Uint8Array(pdfBuffer)
+
+    console.log('PDF gerado com sucesso:', {
+      duration_ms: duration,
+      size_bytes: pdfArray.byteLength,
+      size_kb: Math.round(pdfArray.byteLength / 1024)
+    })
+
+    return pdfArray
+
+  } catch (error) {
+    console.error('Erro ao gerar PDF:', error)
+
+    // Se for erro de rede, tentar retry uma vez
+    if (error.message && (error.message.includes('fetch failed') || error.message.includes('network'))) {
+      console.log('Tentando retry após erro de rede...')
+      await new Promise(resolve => setTimeout(resolve, 2000))
+
+      const retryResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${btoa(`api:${PDFSHIFT_API_KEY}`)}`
+        },
+        body: JSON.stringify({
+          source: html,
+          format: 'A4',
+          margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' },
+          use_print: true,
+          wait_for: 'networkidle0'
+        })
+      })
+
+      if (!retryResponse.ok) {
+        throw new Error(`PDFShift retry failed: ${await retryResponse.text()}`)
+      }
+
+      const retryBuffer = await retryResponse.arrayBuffer()
+      console.log('PDF gerado com sucesso no retry')
+      return new Uint8Array(retryBuffer)
+    }
+
+    throw error
+  }
 }
 
 function formatCurrency(value: number): string {
