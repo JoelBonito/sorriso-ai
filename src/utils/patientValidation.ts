@@ -14,6 +14,14 @@ export const patientSchema = z.object({
     .email('Email inválido')
     .optional()
     .or(z.literal('')),
+  cpf: z
+    .string()
+    .optional()
+    .refine((cpf) => {
+      if (!cpf || cpf === '') return true;
+      const cleaned = cpf.replace(/\D/g, '');
+      return cleaned.length === 0 || cleaned.length === 11;
+    }, 'CPF deve ter 11 dígitos'),
   birth_date: z
     .string()
     .optional()
@@ -46,4 +54,20 @@ export function formatPhoneNumber(phone: string): string {
 
 export function cleanPhoneNumber(phone: string): string {
   return phone.replace(/\D/g, '');
+}
+
+export function formatCPF(cpf: string): string {
+  // Remove tudo exceto números
+  const cleaned = cpf.replace(/\D/g, '');
+
+  // Formato: 000.000.000-00
+  if (cleaned.length === 11) {
+    return `${cleaned.slice(0, 3)}.${cleaned.slice(3, 6)}.${cleaned.slice(6, 9)}-${cleaned.slice(9)}`;
+  }
+
+  return cpf;
+}
+
+export function cleanCPF(cpf: string): string {
+  return cpf.replace(/\D/g, '');
 }

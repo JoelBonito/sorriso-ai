@@ -8,6 +8,7 @@
 
 ## {{CLINIC_NAME}}
 
+**CNPJ:** {{CLINIC_CNPJ}}
 **Endereço:** {{CLINIC_ADDRESS}}
 **CEP:** {{CLINIC_ZIP_CODE}} - {{CLINIC_CITY}}/{{CLINIC_STATE}}
 **Telefone:** {{CLINIC_PHONE}}

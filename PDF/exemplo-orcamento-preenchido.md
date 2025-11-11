@@ -8,6 +8,7 @@
 
 ## Clínica Sorriso Perfeito
 
+**CNPJ:** 12.345.678/0001-90
 **Endereço:** Av. Paulista, 1000 - Bela Vista
 **CEP:** 01310-100 - São Paulo/SP
 **Telefone:** (11) 3456-7890

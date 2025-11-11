@@ -35,6 +35,7 @@ export default function ConfigForm() {
     clinicAddress: "",
     clinicPhone: "",
     clinicEmail: "",
+    clinicCnpj: "",
     clinicLogoUrl: "",
     clinicZipCode: "",
     clinicCity: "",
@@ -103,6 +104,7 @@ export default function ConfigForm() {
       clinicAddress: formData.clinicAddress,
       clinicPhone: formData.clinicPhone,
       clinicEmail: formData.clinicEmail,
+      clinicCnpj: formData.clinicCnpj,
       clinicLogoUrl: formData.clinicLogoUrl,
       clinicZipCode: formData.clinicZipCode,
       clinicCity: formData.clinicCity,
@@ -303,6 +305,14 @@ export default function ConfigForm() {
             <Input id="clinicEmail" type="email" placeholder="contato@clinica.com" value={formData.clinicEmail || ''} onChange={e => setFormData({
             ...formData,
             clinicEmail: e.target.value
+          })} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clinicCnpj">CNPJ</Label>
+            <Input id="clinicCnpj" type="text" placeholder="00.000.000/0000-00" value={formData.clinicCnpj || ''} onChange={e => setFormData({
+            ...formData,
+            clinicCnpj: e.target.value
           })} />
           </div>
 

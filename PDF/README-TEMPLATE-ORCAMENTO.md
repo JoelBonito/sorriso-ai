@@ -37,6 +37,7 @@
 
 #### Dados da Clínica (do banco `user_configs`):
 - `{{CLINIC_NAME}}` - Nome da clínica
+- `{{CLINIC_CNPJ}}` - CNPJ da clínica
 - `{{CLINIC_ADDRESS}}` - Endereço completo
 - `{{CLINIC_ZIP_CODE}}` - CEP
 - `{{CLINIC_CITY}}` - Cidade
