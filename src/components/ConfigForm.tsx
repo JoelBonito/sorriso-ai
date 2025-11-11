@@ -42,6 +42,14 @@ export default function ConfigForm() {
     clinicZipCode: "",
     clinicCity: "",
     clinicState: "",
+    paymentConfig: {
+      discount_cash: 10,
+      discount_pix: 5,
+      max_installments: 12,
+      allow_credit_card: true,
+      allow_debit_card: true,
+      allow_boleto: true
+    },
     crmEnabled: true,
     facetsSimulatorEnabled: true,
     whiteningSimulatorEnabled: true
@@ -113,6 +121,7 @@ export default function ConfigForm() {
       clinicZipCode: formData.clinicZipCode,
       clinicCity: formData.clinicCity,
       clinicState: formData.clinicState,
+      paymentConfig: formData.paymentConfig,
       crmEnabled: formData.crmEnabled,
       facetsSimulatorEnabled: formData.facetsSimulatorEnabled,
       whiteningSimulatorEnabled: formData.whiteningSimulatorEnabled
@@ -395,11 +404,141 @@ export default function ConfigForm() {
         </div>
       </div>
 
+      {/* CONDIÇÕES DE PAGAMENTO */}
+      <div className="rounded-lg border bg-card shadow-sm p-6 space-y-4">
+        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+          💳 Condições de Pagamento
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Configure os descontos e condições de pagamento padrão que serão aplicados nos orçamentos
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="discountCash">Desconto à Vista (Dinheiro) %</Label>
+            <Input
+              id="discountCash"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              placeholder="10"
+              value={formData.paymentConfig?.discount_cash || 0}
+              onChange={e => setFormData({
+                ...formData,
+                paymentConfig: {
+                  ...formData.paymentConfig!,
+                  discount_cash: parseFloat(e.target.value) || 0
+                }
+              })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="discountPix">Desconto PIX %</Label>
+            <Input
+              id="discountPix"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              placeholder="5"
+              value={formData.paymentConfig?.discount_pix || 0}
+              onChange={e => setFormData({
+                ...formData,
+                paymentConfig: {
+                  ...formData.paymentConfig!,
+                  discount_pix: parseFloat(e.target.value) || 0
+                }
+              })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="maxInstallments">Parcelas Máximas</Label>
+            <Input
+              id="maxInstallments"
+              type="number"
+              min="1"
+              max="48"
+              step="1"
+              placeholder="12"
+              value={formData.paymentConfig?.max_installments || 12}
+              onChange={e => setFormData({
+                ...formData,
+                paymentConfig: {
+                  ...formData.paymentConfig!,
+                  max_installments: parseInt(e.target.value) || 12
+                }
+              })}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-3 pt-2">
+          <Label className="text-base">Formas de Pagamento Aceitas</Label>
+
+          <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div>
+              <Label htmlFor="allowCreditCard" className="text-sm font-medium">Cartão de Crédito</Label>
+              <p className="text-xs text-muted-foreground">Aceitar pagamento com cartão de crédito</p>
+            </div>
+            <Switch
+              id="allowCreditCard"
+              checked={formData.paymentConfig?.allow_credit_card ?? true}
+              onCheckedChange={checked => setFormData({
+                ...formData,
+                paymentConfig: {
+                  ...formData.paymentConfig!,
+                  allow_credit_card: checked
+                }
+              })}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div>
+              <Label htmlFor="allowDebitCard" className="text-sm font-medium">Cartão de Débito</Label>
+              <p className="text-xs text-muted-foreground">Aceitar pagamento com cartão de débito</p>
+            </div>
+            <Switch
+              id="allowDebitCard"
+              checked={formData.paymentConfig?.allow_debit_card ?? true}
+              onCheckedChange={checked => setFormData({
+                ...formData,
+                paymentConfig: {
+                  ...formData.paymentConfig!,
+                  allow_debit_card: checked
+                }
+              })}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div>
+              <Label htmlFor="allowBoleto" className="text-sm font-medium">Boleto Bancário</Label>
+              <p className="text-xs text-muted-foreground">Aceitar pagamento com boleto</p>
+            </div>
+            <Switch
+              id="allowBoleto"
+              checked={formData.paymentConfig?.allow_boleto ?? true}
+              onCheckedChange={checked => setFormData({
+                ...formData,
+                paymentConfig: {
+                  ...formData.paymentConfig!,
+                  allow_boleto: checked
+                }
+              })}
+            />
+          </div>
+        </div>
+      </div>
+
       {/* CREDENCIAIS */}
-      
+
 
       {/* PARÂMETROS AVANÇADOS */}
-      
+
 
       {/* MÓDULOS DO SISTEMA */}
       <div className="rounded-lg border bg-card shadow-sm p-6 space-y-4">

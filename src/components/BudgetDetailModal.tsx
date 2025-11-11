@@ -1,11 +1,13 @@
-import React from 'react';
-import { X, FileText, Download, Calendar, User, Phone } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, FileText, Download, Calendar, User, Phone, RefreshCw } from 'lucide-react';
 import { useBudgetDetail } from '@/hooks/useBudgetDetail';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrency } from '@/utils/formatters';
 import { StatusBadge } from './StatusBadge';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { generateBudgetPDF } from '@/services/budgetService';
 import {
   Dialog,
   DialogContent,
@@ -25,7 +27,29 @@ export const BudgetDetailModal: React.FC<BudgetDetailModalProps> = ({
   isOpen,
   onClose
 }) => {
-  const { budget, loading } = useBudgetDetail(budgetId);
+  const { budget, loading, refetch } = useBudgetDetail(budgetId);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+
+  const handleGeneratePDF = async () => {
+    if (!budgetId) return;
+
+    setGeneratingPdf(true);
+    try {
+      const pdfUrl = await generateBudgetPDF(budgetId);
+      toast.success('PDF gerado com sucesso!');
+
+      // Atualizar budget para mostrar novo PDF
+      await refetch();
+
+      // Abrir PDF em nova aba
+      window.open(pdfUrl, '_blank');
+    } catch (error: any) {
+      console.error('Erro ao gerar PDF:', error);
+      toast.error(error.message || 'Erro ao gerar PDF. Tente novamente.');
+    } finally {
+      setGeneratingPdf(false);
+    }
+  };
 
   if (!budget && !loading) return null;
 
@@ -145,7 +169,7 @@ export const BudgetDetailModal: React.FC<BudgetDetailModalProps> = ({
 
             {/* Ações */}
             <div className="flex gap-3 pt-4 border-t border-border">
-              {budget.pdf_url && (
+              {budget.pdf_url ? (
                 <>
                   <Button
                     onClick={() => window.open(budget.pdf_url!, '_blank')}
@@ -167,7 +191,34 @@ export const BudgetDetailModal: React.FC<BudgetDetailModalProps> = ({
                       Download
                     </a>
                   </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleGeneratePDF}
+                    disabled={generatingPdf}
+                    className="flex items-center gap-2"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${generatingPdf ? 'animate-spin' : ''}`} />
+                    Regenerar
+                  </Button>
                 </>
+              ) : (
+                <Button
+                  onClick={handleGeneratePDF}
+                  disabled={generatingPdf}
+                  className="flex-1 flex items-center gap-2"
+                >
+                  {generatingPdf ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      Gerando PDF...
+                    </>
+                  ) : (
+                    <>
+                      <FileText className="w-4 h-4" />
+                      Gerar PDF
+                    </>
+                  )}
+                </Button>
               )}
             </div>
           </div>

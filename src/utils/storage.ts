@@ -1,5 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export interface PaymentConfig {
+  discount_cash: number;
+  discount_pix: number;
+  max_installments: number;
+  allow_credit_card: boolean;
+  allow_debit_card: boolean;
+  allow_boleto: boolean;
+}
+
 export interface Config {
   apiKey: string;
   backendUrl: string;
@@ -8,12 +17,12 @@ export interface Config {
   topP: number;
   maxTokens: number;
   promptTemplate: string;
-  
+
   // Dados do usuário
   userName?: string;
   userPhone?: string;
   userEmail?: string;
-  
+
   // Dados da clínica
   clinicName?: string;
   clinicAddress?: string;
@@ -26,7 +35,10 @@ export interface Config {
   clinicZipCode?: string;
   clinicCity?: string;
   clinicState?: string;
-  
+
+  // Condições de pagamento
+  paymentConfig?: PaymentConfig;
+
   // Módulos
   crmEnabled: boolean;
   facetsSimulatorEnabled?: boolean;
@@ -117,7 +129,10 @@ export async function saveConfig(config: Config): Promise<void> {
       clinic_zip_code: config.clinicZipCode || null,
       clinic_city: config.clinicCity || null,
       clinic_state: config.clinicState || null,
-      
+
+      // Condições de pagamento
+      payment_config: config.paymentConfig || null,
+
       // Módulos
       crm_enabled: config.crmEnabled,
       facets_simulator_enabled: config.facetsSimulatorEnabled ?? true,
@@ -166,7 +181,24 @@ export async function getConfig(): Promise<Config | null> {
     clinicZipCode: data.clinic_zip_code || undefined,
     clinicCity: data.clinic_city || undefined,
     clinicState: data.clinic_state || undefined,
-    
+
+    // Condições de pagamento
+    paymentConfig: data.payment_config ? {
+      discount_cash: data.payment_config.discount_cash ?? 10,
+      discount_pix: data.payment_config.discount_pix ?? 5,
+      max_installments: data.payment_config.max_installments ?? 12,
+      allow_credit_card: data.payment_config.allow_credit_card ?? true,
+      allow_debit_card: data.payment_config.allow_debit_card ?? true,
+      allow_boleto: data.payment_config.allow_boleto ?? true,
+    } : {
+      discount_cash: 10,
+      discount_pix: 5,
+      max_installments: 12,
+      allow_credit_card: true,
+      allow_debit_card: true,
+      allow_boleto: true,
+    },
+
     // Módulos
     crmEnabled: data.crm_enabled !== false,
     facetsSimulatorEnabled: data.facets_simulator_enabled ?? true,

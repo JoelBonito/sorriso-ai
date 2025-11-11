@@ -16,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 interface BudgetItem {
   servico: string;
   categoria?: string;
+  dentes?: string;
   quantidade: number;
   valor_unitario: number;
   observacoes?: string;
@@ -53,6 +54,7 @@ export const BudgetFormModal: React.FC<BudgetFormModalProps> = ({
   const [quickService, setQuickService] = useState({
     servico: '',
     categoria: '',
+    dentes: '',
     quantidade: 1,
     valor_unitario: 0
   });
@@ -100,11 +102,12 @@ export const BudgetFormModal: React.FC<BudgetFormModalProps> = ({
 
   const handleAddQuickService = () => {
     if (!quickService.servico || quickService.valor_unitario <= 0) return;
-    
+
     setItems([...items, { ...quickService }]);
     setQuickService({
       servico: '',
       categoria: '',
+      dentes: '',
       quantidade: 1,
       valor_unitario: 0
     });
@@ -245,13 +248,21 @@ export const BudgetFormModal: React.FC<BudgetFormModalProps> = ({
               {/* Quick Service Form */}
               {showQuickService && (
                 <div className="p-4 border rounded-lg bg-muted/20 space-y-3">
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-5 gap-2">
                     <div className="col-span-2">
                       <Label className="text-xs">Descrição</Label>
                       <Input
                         value={quickService.servico}
                         onChange={(e) => setQuickService({ ...quickService, servico: e.target.value })}
                         placeholder="Nome do serviço"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Dente(s)</Label>
+                      <Input
+                        value={quickService.dentes}
+                        onChange={(e) => setQuickService({ ...quickService, dentes: e.target.value })}
+                        placeholder="11, 21"
                       />
                     </div>
                     <div>
@@ -288,9 +299,10 @@ export const BudgetFormModal: React.FC<BudgetFormModalProps> = ({
                     <thead className="bg-muted/50 border-b">
                       <tr>
                         <th className="px-4 py-2 text-left text-xs font-medium">Descrição</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium w-24">Qtd</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium w-32">Valor Unit.</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium w-32">Total</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium w-32">Dente(s)</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium w-20">Qtd</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium w-28">Valor Unit.</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium w-28">Total</th>
                         <th className="px-4 py-2 text-center text-xs font-medium w-16"></th>
                       </tr>
                     </thead>
@@ -305,11 +317,20 @@ export const BudgetFormModal: React.FC<BudgetFormModalProps> = ({
                           </td>
                           <td className="px-4 py-2">
                             <Input
+                              type="text"
+                              placeholder="11, 21"
+                              value={item.dentes || ''}
+                              onChange={(e) => handleUpdateItem(index, 'dentes', e.target.value)}
+                              className="h-8 text-xs"
+                            />
+                          </td>
+                          <td className="px-4 py-2">
+                            <Input
                               type="number"
                               min="1"
                               value={item.quantidade}
                               onChange={(e) => handleUpdateItem(index, 'quantidade', parseInt(e.target.value) || 1)}
-                              className="h-8 w-20"
+                              className="h-8 w-16"
                             />
                           </td>
                           <td className="px-4 py-2">

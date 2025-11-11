@@ -549,6 +549,28 @@ export async function getPatientBudgets(patientId: string): Promise<Budget[]> {
 }
 
 /**
+ * Gera PDF do orçamento chamando Edge Function
+ * @param budgetId - ID do orçamento
+ * @returns URL do PDF gerado
+ */
+export async function generateBudgetPDF(budgetId: string): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('generate-budget-pdf', {
+    body: { budgetId }
+  });
+
+  if (error) {
+    console.error('❌ Erro ao gerar PDF:', error);
+    throw new Error(error.message || 'Erro ao gerar PDF do orçamento');
+  }
+
+  if (!data || !data.pdf_url) {
+    throw new Error('PDF gerado mas URL não retornada');
+  }
+
+  return data.pdf_url;
+}
+
+/**
  * Creates or updates a lead in CRM from a budget
  */
 export async function createLeadFromBudget(budgetId: string): Promise<{ leadId: string; isNew: boolean }> {
