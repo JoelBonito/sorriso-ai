@@ -290,49 +290,9 @@ export default function ConfigForm() {
           
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="clinicAddress">Endereço</Label>
-            <Input id="clinicAddress" type="text" placeholder="Rua, número, bairro, cidade - UF" value={formData.clinicAddress || ''} onChange={e => setFormData({
+            <Input id="clinicAddress" type="text" placeholder="Rua, número, bairro" value={formData.clinicAddress || ''} onChange={e => setFormData({
             ...formData,
             clinicAddress: e.target.value
-          })} />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="clinicPhone">Telefone</Label>
-            <Input id="clinicPhone" type="tel" placeholder="(00) 0000-0000" value={formData.clinicPhone || ''} onChange={e => setFormData({
-            ...formData,
-            clinicPhone: e.target.value
-          })} />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="clinicEmail">E-mail</Label>
-            <Input id="clinicEmail" type="email" placeholder="contato@clinica.com" value={formData.clinicEmail || ''} onChange={e => setFormData({
-            ...formData,
-            clinicEmail: e.target.value
-          })} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="clinicCnpj">CNPJ</Label>
-            <Input id="clinicCnpj" type="text" placeholder="00.000.000/0000-00" value={formData.clinicCnpj || ''} onChange={e => setFormData({
-            ...formData,
-            clinicCnpj: e.target.value
-          })} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="clinicDentistName">Nome do Responsável Técnico</Label>
-            <Input id="clinicDentistName" type="text" placeholder="Dr(a). Nome Completo" value={formData.clinicDentistName || ''} onChange={e => setFormData({
-            ...formData,
-            clinicDentistName: e.target.value
-          })} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="clinicCro">CRO</Label>
-            <Input id="clinicCro" type="text" placeholder="CRO-SP 12345" value={formData.clinicCro || ''} onChange={e => setFormData({
-            ...formData,
-            clinicCro: e.target.value
           })} />
           </div>
 
@@ -391,6 +351,46 @@ export default function ConfigForm() {
                 <SelectItem value="TO">Tocantins - TO</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clinicPhone">Telefone</Label>
+            <Input id="clinicPhone" type="tel" placeholder="(00) 0000-0000" value={formData.clinicPhone || ''} onChange={e => setFormData({
+            ...formData,
+            clinicPhone: e.target.value
+          })} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clinicEmail">E-mail</Label>
+            <Input id="clinicEmail" type="email" placeholder="contato@clinica.com" value={formData.clinicEmail || ''} onChange={e => setFormData({
+            ...formData,
+            clinicEmail: e.target.value
+          })} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clinicCnpj">CNPJ</Label>
+            <Input id="clinicCnpj" type="text" placeholder="00.000.000/0000-00" value={formData.clinicCnpj || ''} onChange={e => setFormData({
+            ...formData,
+            clinicCnpj: e.target.value
+          })} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clinicDentistName">Nome do Responsável Técnico</Label>
+            <Input id="clinicDentistName" type="text" placeholder="Dr(a). Nome Completo" value={formData.clinicDentistName || ''} onChange={e => setFormData({
+            ...formData,
+            clinicDentistName: e.target.value
+          })} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clinicCro">CRO</Label>
+            <Input id="clinicCro" type="text" placeholder="CRO-SP 12345" value={formData.clinicCro || ''} onChange={e => setFormData({
+            ...formData,
+            clinicCro: e.target.value
+          })} />
           </div>
         </div>
       </div>
