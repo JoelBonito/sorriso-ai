@@ -1,0 +1,52 @@
+name: Deploy Edge Functions
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'supabase/functions/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Deploy Edge Functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          echo "🚀 Deploying Edge Functions to Supabase..."
+
+          # Link to project
+          supabase link --project-ref $SUPABASE_PROJECT_ID
+
+          # Deploy all functions
+          supabase functions deploy generate-budget-pdf --no-verify-jwt
+
+          echo "✅ Edge Functions deployed successfully!"
+
+      - name: Set secrets (if needed)
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          PDFSHIFT_API_KEY: ${{ secrets.PDFSHIFT_API_KEY }}
+        run: |
+          if [ ! -z "$PDFSHIFT_API_KEY" ]; then
+            echo "🔑 Setting PDFSHIFT_API_KEY secret..."
+            supabase secrets set PDFSHIFT_API_KEY="$PDFSHIFT_API_KEY" --project-ref $SUPABASE_PROJECT_ID
+            echo "✅ Secret set successfully!"
+          else
+            echo "⚠️  PDFSHIFT_API_KEY secret not found in GitHub, skipping..."
+          fi
