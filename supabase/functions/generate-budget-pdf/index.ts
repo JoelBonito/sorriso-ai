@@ -68,18 +68,30 @@ serve(async (req) => {
 
     // 8. Upload para storage
     const fileName = `${budget.user_id}/${budgetId}-${Date.now()}.pdf`
+
+    console.log('Fazendo upload do PDF:', {
+      bucket: 'budgets',
+      fileName,
+      size_kb: Math.round(pdfBuffer.byteLength / 1024)
+    })
+
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('budget-pdfs')
+      .from('budgets')
       .upload(fileName, pdfBuffer, {
         contentType: 'application/pdf',
         upsert: true
       })
 
-    if (uploadError) throw uploadError
+    if (uploadError) {
+      console.error('Erro no upload:', uploadError)
+      throw new Error(`Erro ao fazer upload do PDF: ${uploadError.message}`)
+    }
+
+    console.log('Upload concluído com sucesso:', uploadData)
 
     // 9. Obter URL pública
     const { data: urlData } = supabase.storage
-      .from('budget-pdfs')
+      .from('budgets')
       .getPublicUrl(fileName)
 
     const pdfUrl = urlData.publicUrl
@@ -529,11 +541,7 @@ async function htmlToPdf(html: string): Promise<Uint8Array> {
           right: '15mm'
         },
         use_print: true,
-        wait_for: 'networkidle0', // Espera todas as imagens carregarem
-        viewport: {
-          width: 794,  // A4 width em pixels (96 DPI)
-          height: 1123 // A4 height em pixels (96 DPI)
-        }
+        wait_for: 'networkidle0' // Espera todas as imagens carregarem
       })
     })
 
