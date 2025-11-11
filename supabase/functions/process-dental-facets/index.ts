@@ -29,7 +29,7 @@ function createLogger(runId: string) {
 }
 
 const MODEL_NAME_ANALYSIS = 'gemini-2.0-flash-exp';
-const MODEL_NAME_GENERATION = 'gemini-2.5-flash-image';
+const MODEL_NAME_GENERATION = 'gemini-2.0-flash-exp';
 
 // Importar prompts modulares
 import { getAnalysisPrompt } from './prompts.ts';
@@ -394,17 +394,30 @@ Deno.serve(async (req) => {
         );
         
         clearTimeout(timeoutId);
-        
+
         if (!analysisResponse.ok) {
           const errorText = await analysisResponse.text();
-          throw new Error(`Erro na análise: ${analysisResponse.status} - ${errorText}`);
+          log.error(`Erro na API do Gemini (${analysisResponse.status}):`, errorText);
+
+          let errorMessage = `Erro na análise: ${analysisResponse.status}`;
+          try {
+            const errorJson = JSON.parse(errorText);
+            if (errorJson.error?.message) {
+              errorMessage = errorJson.error.message;
+            }
+          } catch (e) {
+            errorMessage += ` - ${errorText.substring(0, 200)}`;
+          }
+
+          throw new Error(errorMessage);
         }
-        
+
         const analysisResult = await analysisResponse.json();
         const responseText = analysisResult.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-        
+
         if (!responseText) {
-          throw new Error('Gemini não retornou conteúdo');
+          log.error('Estrutura de resposta inesperada:', JSON.stringify(analysisResult).substring(0, 500));
+          throw new Error('Gemini não retornou conteúdo de análise');
         }
 
         let analise_data;
@@ -546,6 +559,7 @@ Deno.serve(async (req) => {
       // Selecionar prompt adequado
       const simulationPrompt = buildSimulationPrompt(treatment_type || 'facetas');
       log.info(`Prompt selecionado: ${treatment_type === 'clareamento' ? 'CLAREAMENTO' : 'FACETAS'}`);
+      log.info('Iniciando chamada à API do Google Gemini...');
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
@@ -580,19 +594,33 @@ Deno.serve(async (req) => {
         );
         
         clearTimeout(timeoutId);
-        
+
         if (!imageResponse.ok) {
           const errorText = await imageResponse.text();
-          throw new Error(`Erro na geração: ${imageResponse.status} - ${errorText}`);
+          log.error(`Erro na API do Gemini (${imageResponse.status}):`, errorText);
+
+          let errorMessage = `Erro na geração de imagem: ${imageResponse.status}`;
+          try {
+            const errorJson = JSON.parse(errorText);
+            if (errorJson.error?.message) {
+              errorMessage = errorJson.error.message;
+            }
+          } catch (e) {
+            errorMessage += ` - ${errorText.substring(0, 200)}`;
+          }
+
+          throw new Error(errorMessage);
         }
-        
+
         const imageResult = await imageResponse.json();
-        
+        log.info('Resposta da API recebida, extraindo imagem...');
+
         // Extrair imagem gerada
         const generatedImageData = imageResult.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-        
+
         if (!generatedImageData) {
-          throw new Error('Nenhuma imagem foi gerada');
+          log.error('Estrutura de resposta inesperada:', JSON.stringify(imageResult).substring(0, 500));
+          throw new Error('Nenhuma imagem foi gerada pela API do Gemini. Verifique se o modelo suporta geração de imagens.');
         }
         
         // Converter para formato base64 completo
