@@ -29,7 +29,8 @@ function createLogger(runId: string) {
 }
 
 const MODEL_NAME_ANALYSIS = 'gemini-2.0-flash-exp';
-const MODEL_NAME_GENERATION = 'gemini-2.0-flash-exp';
+const MODEL_NAME_GENERATION = 'gemini-2.5-flash-image'; // Modelo especializado em geração de imagens
+const MODEL_NAME_GENERATION_FALLBACK = 'gemini-2.0-flash-exp'; // Fallback se o especializado não estiver disponível
 
 // Importar prompts modulares
 import { getAnalysisPrompt } from './prompts.ts';
@@ -568,6 +569,20 @@ Deno.serve(async (req) => {
       }, 120000);
 
       try {
+        // Preparar configuração baseada no modelo
+        const isImageSpecificModel = MODEL_NAME_GENERATION.includes('flash-image');
+        const generationConfig: any = {
+          temperature: 0.4,
+          maxOutputTokens: 8000
+        };
+
+        // responseModalities só é necessário para modelos multimodais gerais (não para modelos específicos de imagem)
+        if (!isImageSpecificModel) {
+          generationConfig.responseModalities = ['Text', 'Image'];
+        }
+
+        log.info(`Configuração: ${JSON.stringify(generationConfig)}`);
+
         // Chamar API do Google Gemini para geração de imagem
         const imageResponse = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME_GENERATION}:generateContent?key=${geminiApiKey}`,
@@ -583,11 +598,7 @@ Deno.serve(async (req) => {
                   prepareImageForGemini(imageBase64)
                 ]
               }],
-              generationConfig: {
-                temperature: 0.4,
-                maxOutputTokens: 8000,
-                responseModalities: ['Image']
-              }
+              generationConfig
             }),
             signal: controller.signal,
           }
