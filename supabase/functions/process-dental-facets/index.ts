@@ -28,7 +28,7 @@ function createLogger(runId: string) {
   };
 }
 
-const MODEL_NAME_ANALYSIS = 'gemini-2.0-flash-exp';
+const MODEL_NAME_ANALYSIS = 'gemini-2.5-flash-lite';
 const MODEL_NAME_GENERATION = 'gemini-2.5-flash-image'; // Modelo especializado em geração de imagens
 const MODEL_NAME_GENERATION_FALLBACK = 'gemini-2.0-flash-exp'; // Fallback se o especializado não estiver disponível
 
