@@ -8,32 +8,52 @@
 
 ## Clínica Sorriso Perfeito
 
+**CNPJ:** 12.345.678/0001-90
 **Endereço:** Av. Paulista, 1000 - Bela Vista
 **CEP:** 01310-100 - São Paulo/SP
-**Telefone:** (11) 3456-7890
-**E-mail:** contato@sorrisoperfeito.com.br
+**Telefone:** (11) 3456-7890 | **E-mail:** contato@sorrisoperfeito.com.br
 
 ---
 
-## DADOS DO ORÇAMENTO
+## SIMULAÇÃO DO TRATAMENTO
 
-| Item | Informação |
-|------|------------|
-| **Nº do Orçamento** | ORCAM-2025-001 |
-| **Data de Emissão** | 11/11/2025 |
-| **Validade** | 11/12/2025 (30 dias) |
-| **Status** | Pendente de Aprovação |
+<div style="display: flex; justify-content: space-around; align-items: center; margin: 20px 0;">
+  <div style="text-align: center; flex: 1;">
+    <div style="width: 280px; height: 200px; border: 2px solid #ddd; border-radius: 8px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+      <p style="color: #999;">IMAGEM ANTES</p>
+    </div>
+    <p style="margin-top: 8px; font-weight: bold; color: #666;">ANTES</p>
+  </div>
+  <div style="text-align: center; flex: 1;">
+    <div style="width: 280px; height: 200px; border: 2px solid #ddd; border-radius: 8px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+      <p style="color: #999;">IMAGEM DEPOIS</p>
+    </div>
+    <p style="margin-top: 8px; font-weight: bold; color: #666;">DEPOIS</p>
+  </div>
+</div>
 
 ---
 
-## DADOS DO PACIENTE
-
-| Item | Informação |
-|------|------------|
-| **Nome Completo** | João Silva Santos |
-| **CPF** | 123.456.789-00 |
-| **Telefone** | (11) 98765-4321 |
-| **E-mail** | joao.silva@email.com |
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+  <div>
+    <h3 style="margin-bottom: 10px;">📋 DADOS DO ORÇAMENTO</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr><td style="padding: 5px; border-bottom: 1px solid #eee;"><strong>Nº Orçamento:</strong></td><td style="padding: 5px; border-bottom: 1px solid #eee;">ORCAM-2025-001</td></tr>
+      <tr><td style="padding: 5px; border-bottom: 1px solid #eee;"><strong>Data Emissão:</strong></td><td style="padding: 5px; border-bottom: 1px solid #eee;">11/11/2025</td></tr>
+      <tr><td style="padding: 5px; border-bottom: 1px solid #eee;"><strong>Validade:</strong></td><td style="padding: 5px; border-bottom: 1px solid #eee;">11/12/2025 (30 dias)</td></tr>
+      <tr><td style="padding: 5px;"><strong>Status:</strong></td><td style="padding: 5px;">Pendente de Aprovação</td></tr>
+    </table>
+  </div>
+  <div>
+    <h3 style="margin-bottom: 10px;">👤 DADOS DO PACIENTE</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr><td style="padding: 5px; border-bottom: 1px solid #eee;"><strong>Nome:</strong></td><td style="padding: 5px; border-bottom: 1px solid #eee;">João Silva Santos</td></tr>
+      <tr><td style="padding: 5px; border-bottom: 1px solid #eee;"><strong>CPF:</strong></td><td style="padding: 5px; border-bottom: 1px solid #eee;">123.456.789-00</td></tr>
+      <tr><td style="padding: 5px; border-bottom: 1px solid #eee;"><strong>Telefone:</strong></td><td style="padding: 5px; border-bottom: 1px solid #eee;">(11) 98765-4321</td></tr>
+      <tr><td style="padding: 5px;"><strong>E-mail:</strong></td><td style="padding: 5px;">joao.silva@email.com</td></tr>
+    </table>
+  </div>
+</div>
 
 ---
 
@@ -60,46 +80,33 @@
 
 ## CONDIÇÕES DE PAGAMENTO
 
-### Formas de Pagamento Aceitas:
-- ✅ Dinheiro (10% de desconto)
-- ✅ PIX (10% de desconto)
-- ✅ Cartão de Crédito (até 12x)
-- ✅ Cartão de Débito
-- ✅ Boleto Bancário
+**Formas de Pagamento Aceitas:**
+- ✅ Dinheiro (10% desconto) | ✅ PIX (10% desconto)
+- ✅ Cartão de Crédito (até 12x) | ✅ Cartão de Débito | ✅ Boleto
 
-### Parcelamento:
+**Parcelamento:**
 - **À vista:** R$ 9.000,00 (10% desconto adicional)
 - **Parcelado:** Até 12x de R$ 833,33 sem juros
 
 ---
 
+<div style="font-size: 0.85em; line-height: 1.4;">
+
 ## ⚠️ OBSERVAÇÕES IMPORTANTES
 
-### Sobre este Orçamento:
+**Sobre este Orçamento:**
 
-1. **ORÇAMENTO INDICATIVO:** Este documento apresenta valores e procedimentos baseados em uma **simulação prévia e análise preliminar**. Os valores e tratamentos aqui descritos são aproximados e têm caráter informativo.
+**ORÇAMENTO INDICATIVO:** Este documento apresenta valores e procedimentos baseados em uma simulação prévia e análise preliminar. Os valores e tratamentos aqui descritos são aproximados e têm caráter informativo.
 
-2. **AVALIAÇÃO PRESENCIAL OBRIGATÓRIA:** Para um orçamento definitivo e preciso, é **INDISPENSÁVEL** a realização de uma **consulta técnica presencial** com avaliação clínica completa, incluindo:
-   - Exame clínico detalhado
-   - Análise radiográfica (quando necessário)
-   - Moldagem e planejamento digital (se aplicável)
-   - Avaliação individualizada do caso
+**AVALIAÇÃO PRESENCIAL OBRIGATÓRIA:** Para um orçamento definitivo e preciso, é INDISPENSÁVEL a realização de uma consulta técnica presencial com avaliação clínica completa.
 
-3. **POSSÍVEIS VARIAÇÕES:** Os valores finais podem sofrer alterações após a avaliação presencial, considerando:
-   - Condições específicas da saúde bucal do paciente
-   - Necessidade de tratamentos preparatórios não previstos
-   - Escolha de materiais e técnicas após discussão com o dentista
-   - Complexidade identificada durante o exame clínico
+**POSSÍVEIS VARIAÇÕES:** Os valores finais podem sofrer alterações após a avaliação presencial, considerando condições específicas da saúde bucal, necessidade de tratamentos preparatórios e complexidade identificada durante o exame clínico.
 
-4. **VALIDADE:** Este orçamento tem validade de 30 dias a partir da data de emissão.
+**VALIDADE:** Este orçamento tem validade de 30 dias a partir da data de envio.
 
-5. **TRATAMENTOS ADICIONAIS:** Procedimentos complementares que se façam necessários após avaliação clínica serão orçados separadamente.
+**GARANTIA:** Todos os procedimentos realizados em nossa clínica contam com garantia em conformidade com as normas do Conselho Federal de Odontologia (CFO).
 
-6. **GARANTIA:** Todos os procedimentos realizados em nossa clínica contam com garantia conforme normas do Conselho Federal de Odontologia (CFO).
-
-7. **MATERIAIS:** As facetas serão confeccionadas em porcelana de alta qualidade, com técnica estratificada para resultado natural e duradouro.
-
-8. **PRAZO:** O tratamento completo tem previsão de 3 a 4 semanas após aprovação do planejamento.
+</div>
 
 ---
 
@@ -107,16 +114,17 @@
 
 Declaro que li e compreendi todas as informações contidas neste orçamento, especialmente as ressalvas sobre sua natureza indicativa e a necessidade de avaliação presencial para confirmação dos valores e procedimentos.
 
-**Data:** ___/___/______
+<div style="margin-top: 30px;">
 
-**Assinatura do Paciente:** _________________________________
+**Data:** ___/___/______ &nbsp;&nbsp;&nbsp;&nbsp; **Assinatura do Paciente:** _________________________________
 
-**Nome do Responsável Técnico:** Dra. Maria Oliveira
-**CRO-SP:** 12345
+**Responsável Técnico:** Dra. Maria Oliveira | **CRO:** CRO-SP 12345
+
+</div>
 
 ---
 
-<div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666;">
-  <p>Clínica Sorriso Perfeito - (11) 3456-7890 - contato@sorrisoperfeito.com.br</p>
+<div style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 0.85em; color: #666;">
+  <p><strong>Clínica Sorriso Perfeito</strong> | (11) 3456-7890 | contato@sorrisoperfeito.com.br</p>
   <p>Av. Paulista, 1000 - Bela Vista - São Paulo/SP - CEP: 01310-100</p>
 </div>

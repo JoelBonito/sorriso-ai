@@ -12,8 +12,8 @@
 ### ✅ Elementos Incluídos:
 
 - **Cabeçalho profissional** com logo e dados da clínica
-- **Informações do orçamento** (número, data, validade)
-- **Dados do paciente** completos
+- **Simulação visual ANTES/DEPOIS** do tratamento (imagens lado a lado)
+- **Layout otimizado formato A4** com dados do orçamento e paciente lado a lado
 - **Tabela detalhada de procedimentos** com colunas para:
   - Código do procedimento
   - Nome do procedimento
@@ -22,12 +22,21 @@
   - Valor unitário
   - Subtotal
 - **Resumo financeiro** com subtotal, desconto e total
-- **Condições de pagamento** detalhadas
-- **Ressalvas importantes** ⚠️ sobre:
+- **Condições de pagamento** detalhadas e compactas
+- **Ressalvas importantes em fonte menor** ⚠️ para economizar espaço:
   - Natureza indicativa do orçamento
   - Obrigatoriedade de avaliação presencial
   - Possíveis variações de valores
-  - Validade e garantias
+  - Validade de 30 dias
+  - Garantias conforme normas do CFO
+
+### 🎨 Melhorias de Layout:
+
+- **Seção de Simulação:** Imagens antes/depois com tamanho controlado (280x200px)
+- **Grid responsivo:** Dados do orçamento e paciente em 2 colunas
+- **Fonte reduzida:** Observações importantes em 0.85em para otimizar espaço
+- **Compactação:** Condições de pagamento em formato horizontal
+- **Formato A4:** Layout otimizado para impressão
 
 ---
 
@@ -37,6 +46,7 @@
 
 #### Dados da Clínica (do banco `user_configs`):
 - `{{CLINIC_NAME}}` - Nome da clínica
+- `{{CLINIC_CNPJ}}` - CNPJ da clínica
 - `{{CLINIC_ADDRESS}}` - Endereço completo
 - `{{CLINIC_ZIP_CODE}}` - CEP
 - `{{CLINIC_CITY}}` - Cidade
@@ -44,6 +54,10 @@
 - `{{CLINIC_PHONE}}` - Telefone
 - `{{CLINIC_EMAIL}}` - E-mail
 - `{{CLINIC_LOGO_URL}}` - URL da logomarca
+
+#### Simulação do Tratamento:
+- `{{SIMULATION_BEFORE_IMAGE}}` - URL da imagem ANTES do tratamento
+- `{{SIMULATION_AFTER_IMAGE}}` - URL da imagem DEPOIS do tratamento
 
 #### Dados do Orçamento:
 - `{{BUDGET_NUMBER}}` - Número do orçamento (ex: ORCAM-2025-001)
@@ -79,9 +93,9 @@
 - `{{CASH_PRICE}}` - Preço à vista com desconto
 - `{{DISCOUNT_PERCENTAGE}}` - Percentual de desconto
 
-#### Profissional:
-- `{{DENTIST_NAME}}` - Nome do dentista responsável
-- `{{DENTIST_CRO}}` - CRO do dentista
+#### Profissional (do banco `user_configs`):
+- `{{DENTIST_NAME}}` - Nome do dentista responsável técnico (campo: `clinic_dentist_name`)
+- `{{DENTIST_CRO}}` - CRO do responsável técnico (campo: `clinic_cro`)
 
 ---
 
@@ -105,9 +119,22 @@ function preencherOrcamento(template, dados) {
 // Exemplo de uso:
 const template = await fetch('/PDF/template-orcamento-profissional.md').then(r => r.text());
 const orcamentoPreenchido = preencherOrcamento(template, {
+  // Dados da clínica
   CLINIC_NAME: config.clinicName,
+  CLINIC_CNPJ: config.clinicCnpj,
   CLINIC_ADDRESS: config.clinicAddress,
   CLINIC_PHONE: config.clinicPhone,
+  CLINIC_EMAIL: config.clinicEmail,
+  CLINIC_LOGO_URL: config.clinicLogoUrl,
+
+  // Simulação
+  SIMULATION_BEFORE_IMAGE: simulation.originalImageUrl,
+  SIMULATION_AFTER_IMAGE: simulation.processedImageUrl,
+
+  // Profissional
+  DENTIST_NAME: config.clinicDentistName,
+  DENTIST_CRO: config.clinicCro,
+
   // ... demais dados
 });
 ```

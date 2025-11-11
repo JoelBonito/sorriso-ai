@@ -8,6 +8,7 @@ export interface Patient {
   name: string;
   phone: string;
   email?: string;
+  cpf?: string;
   birth_date?: string;
   address?: string;
   notes?: string;
@@ -20,6 +21,7 @@ export interface CreatePatientData {
   name: string;
   phone: string;
   email?: string;
+  cpf?: string;
   birth_date?: string;
   address?: string;
   notes?: string;
@@ -29,6 +31,7 @@ export interface UpdatePatientData {
   name?: string;
   phone?: string;
   email?: string;
+  cpf?: string;
   birth_date?: string;
   address?: string;
   notes?: string;

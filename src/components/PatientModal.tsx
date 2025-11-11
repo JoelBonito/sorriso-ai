@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
 import { Patient } from '@/services/patientService';
-import { patientSchema, PatientFormData, formatPhoneNumber } from '@/utils/patientValidation';
+import { patientSchema, PatientFormData, formatPhoneNumber, formatCPF } from '@/utils/patientValidation';
 import {
   Dialog,
   DialogContent,
@@ -109,6 +109,25 @@ export const PatientModal: React.FC<PatientModalProps> = ({
             />
             {errors.email && (
               <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="cpf">CPF</Label>
+            <Input
+              id="cpf"
+              {...register('cpf', {
+                onChange: (e) => {
+                  const formatted = formatCPF(e.target.value);
+                  e.target.value = formatted;
+                }
+              })}
+              placeholder="000.000.000-00"
+              className="mt-1"
+              maxLength={14}
+            />
+            {errors.cpf && (
+              <p className="text-sm text-destructive mt-1">{errors.cpf.message}</p>
             )}
           </div>
 
