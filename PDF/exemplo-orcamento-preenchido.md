@@ -113,7 +113,7 @@ Declaro que li e compreendi todas as informações contidas neste orçamento, es
 **Assinatura do Paciente:** _________________________________
 
 **Nome do Responsável Técnico:** Dra. Maria Oliveira
-**CRO-SP:** 12345
+**CRO:** CRO-SP 12345
 
 ---
 

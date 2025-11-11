@@ -20,6 +20,8 @@ export interface Config {
   clinicPhone?: string;
   clinicEmail?: string;
   clinicCnpj?: string;
+  clinicDentistName?: string;
+  clinicCro?: string;
   clinicLogoUrl?: string;
   clinicZipCode?: string;
   clinicCity?: string;
@@ -109,6 +111,8 @@ export async function saveConfig(config: Config): Promise<void> {
       clinic_phone: config.clinicPhone || null,
       clinic_email: config.clinicEmail || null,
       clinic_cnpj: config.clinicCnpj || null,
+      clinic_dentist_name: config.clinicDentistName || null,
+      clinic_cro: config.clinicCro || null,
       clinic_logo_url: config.clinicLogoUrl || null,
       clinic_zip_code: config.clinicZipCode || null,
       clinic_city: config.clinicCity || null,
@@ -156,6 +160,8 @@ export async function getConfig(): Promise<Config | null> {
     clinicPhone: data.clinic_phone || undefined,
     clinicEmail: data.clinic_email || undefined,
     clinicCnpj: data.clinic_cnpj || undefined,
+    clinicDentistName: data.clinic_dentist_name || undefined,
+    clinicCro: data.clinic_cro || undefined,
     clinicLogoUrl: data.clinic_logo_url || undefined,
     clinicZipCode: data.clinic_zip_code || undefined,
     clinicCity: data.clinic_city || undefined,

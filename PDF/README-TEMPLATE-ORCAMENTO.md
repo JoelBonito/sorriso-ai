@@ -80,9 +80,9 @@
 - `{{CASH_PRICE}}` - Preço à vista com desconto
 - `{{DISCOUNT_PERCENTAGE}}` - Percentual de desconto
 
-#### Profissional:
-- `{{DENTIST_NAME}}` - Nome do dentista responsável
-- `{{DENTIST_CRO}}` - CRO do dentista
+#### Profissional (do banco `user_configs`):
+- `{{DENTIST_NAME}}` - Nome do dentista responsável técnico (campo: `clinic_dentist_name`)
+- `{{DENTIST_CRO}}` - CRO do responsável técnico (campo: `clinic_cro`)
 
 ---
 
@@ -107,8 +107,12 @@ function preencherOrcamento(template, dados) {
 const template = await fetch('/PDF/template-orcamento-profissional.md').then(r => r.text());
 const orcamentoPreenchido = preencherOrcamento(template, {
   CLINIC_NAME: config.clinicName,
+  CLINIC_CNPJ: config.clinicCnpj,
   CLINIC_ADDRESS: config.clinicAddress,
   CLINIC_PHONE: config.clinicPhone,
+  CLINIC_EMAIL: config.clinicEmail,
+  DENTIST_NAME: config.clinicDentistName,
+  DENTIST_CRO: config.clinicCro,
   // ... demais dados
 });
 ```

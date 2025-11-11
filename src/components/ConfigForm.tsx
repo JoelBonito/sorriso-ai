@@ -36,6 +36,8 @@ export default function ConfigForm() {
     clinicPhone: "",
     clinicEmail: "",
     clinicCnpj: "",
+    clinicDentistName: "",
+    clinicCro: "",
     clinicLogoUrl: "",
     clinicZipCode: "",
     clinicCity: "",
@@ -105,6 +107,8 @@ export default function ConfigForm() {
       clinicPhone: formData.clinicPhone,
       clinicEmail: formData.clinicEmail,
       clinicCnpj: formData.clinicCnpj,
+      clinicDentistName: formData.clinicDentistName,
+      clinicCro: formData.clinicCro,
       clinicLogoUrl: formData.clinicLogoUrl,
       clinicZipCode: formData.clinicZipCode,
       clinicCity: formData.clinicCity,
@@ -313,6 +317,22 @@ export default function ConfigForm() {
             <Input id="clinicCnpj" type="text" placeholder="00.000.000/0000-00" value={formData.clinicCnpj || ''} onChange={e => setFormData({
             ...formData,
             clinicCnpj: e.target.value
+          })} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clinicDentistName">Nome do Responsável Técnico</Label>
+            <Input id="clinicDentistName" type="text" placeholder="Dr(a). Nome Completo" value={formData.clinicDentistName || ''} onChange={e => setFormData({
+            ...formData,
+            clinicDentistName: e.target.value
+          })} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="clinicCro">CRO</Label>
+            <Input id="clinicCro" type="text" placeholder="CRO-SP 12345" value={formData.clinicCro || ''} onChange={e => setFormData({
+            ...formData,
+            clinicCro: e.target.value
           })} />
           </div>
 
