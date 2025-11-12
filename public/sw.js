@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'trusmile-v2';
+const CACHE_VERSION = 'trusmile-v3';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
@@ -57,11 +57,13 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          // Clone response for cache
-          const responseClone = response.clone();
-          caches.open(DYNAMIC_CACHE).then((cache) => {
-            cache.put(request, responseClone);
-          });
+          // Only cache GET requests (POST/PUT/DELETE cannot be cached)
+          if (request.method === 'GET' && response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
           return response;
         })
         .catch(() => caches.match(request))
@@ -95,8 +97,8 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
       return fetch(request).then((response) => {
-        // Don't cache if not successful
-        if (!response || response.status !== 200 || response.type === 'error') {
+        // Don't cache if not successful or not a GET request
+        if (!response || response.status !== 200 || response.type === 'error' || request.method !== 'GET') {
           return response;
         }
         const responseClone = response.clone();

@@ -44,15 +44,27 @@ export async function getLeadsGroupedByStage(showArchived: boolean = false): Pro
   if (!user) throw new Error('Not authenticated');
 
   try {
-    const { data, error } = await supabase
+    // Construir query baseada no showArchived
+    let query = supabase
       .from('leads')
       .select(`
         *,
         patient:patients(name, phone, email)
       `)
-      .eq('user_id', user.id)
-      .eq('archived', showArchived)
-      .order('created_at', { ascending: false });
+      .eq('user_id', user.id);
+
+    // Filtrar por archived
+    if (showArchived) {
+      // Mostrar apenas arquivados
+      query = query.eq('archived', true);
+    } else {
+      // Mostrar não arquivados (NULL ou false)
+      query = query.or('archived.is.null,archived.eq.false');
+    }
+
+    query = query.order('created_at', { ascending: false });
+
+    const { data, error } = await query;
 
     if (error) {
       // Se o erro for relacionado à coluna archived não existir, buscar sem o filtro
