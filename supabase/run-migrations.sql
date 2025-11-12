@@ -5,10 +5,24 @@
 -- Dashboard: https://supabase.com/dashboard/project/hqexulgmmtghwtgnqtfy/sql
 --
 -- Esta migration adiciona 22 serviços opcionais padrão para todos os usuários:
--- - 8 serviços de Clareamento
--- - 11 serviços de Facetas
--- - 3 serviços Gerais de Suporte
+-- - 8 serviços de 🦷 Clareamento Dentário
+-- - 11 serviços de 💎 Facetas Dentárias
+-- - 3 serviços de 🔧 Serviços Gerais de Suporte
 -- =========================================================================
+
+-- 0. CRIAR CATEGORIAS
+INSERT INTO public.service_categories (user_id, name)
+SELECT
+  u.id as user_id,
+  categoria.name
+FROM auth.users u
+CROSS JOIN (
+  VALUES
+    ('🦷 Clareamento Dentário'),
+    ('💎 Facetas Dentárias'),
+    ('🔧 Serviços Gerais de Suporte')
+) AS categoria(name)
+ON CONFLICT (user_id, name) DO NOTHING;
 
 -- 1. SERVIÇOS DE CLAREAMENTO (8 serviços)
 INSERT INTO public.services (user_id, name, description, tipo_servico, categoria, price, active, required, base)
@@ -17,7 +31,7 @@ SELECT
   servico.name,
   servico.description,
   'Serviço opcional' as tipo_servico,
-  'Clareamento' as categoria,
+  '🦷 Clareamento Dentário' as categoria,
   servico.price,
   true as active,
   false as required,
@@ -43,7 +57,7 @@ SELECT
   servico.name,
   servico.description,
   'Serviço opcional' as tipo_servico,
-  'Facetas' as categoria,
+  '💎 Facetas Dentárias' as categoria,
   servico.price,
   true as active,
   false as required,
@@ -72,7 +86,7 @@ SELECT
   servico.name,
   servico.description,
   'Serviço opcional' as tipo_servico,
-  'Geral' as categoria,
+  '🔧 Serviços Gerais de Suporte' as categoria,
   servico.price,
   true as active,
   false as required,
@@ -86,20 +100,6 @@ CROSS JOIN (
 ) AS servico(name, description, price)
 ON CONFLICT DO NOTHING;
 
--- 4. ADICIONAR CATEGORIAS À TABELA DE SUGESTÕES
-INSERT INTO public.service_categories (user_id, name)
-SELECT
-  u.id as user_id,
-  categoria.name
-FROM auth.users u
-CROSS JOIN (
-  VALUES
-    ('Clareamento'),
-    ('Facetas'),
-    ('Geral')
-) AS categoria(name)
-ON CONFLICT (user_id, name) DO NOTHING;
-
 -- =========================================================================
 -- VERIFICAÇÃO: Consultar serviços inseridos
 -- =========================================================================
@@ -109,7 +109,7 @@ SELECT
   COUNT(DISTINCT user_id) as total_usuarios
 FROM public.services
 WHERE tipo_servico = 'Serviço opcional'
-  AND categoria IN ('Clareamento', 'Facetas', 'Geral')
+  AND categoria IN ('🦷 Clareamento Dentário', '💎 Facetas Dentárias', '🔧 Serviços Gerais de Suporte')
 GROUP BY categoria
 ORDER BY categoria;
 
@@ -122,6 +122,6 @@ SELECT
 FROM public.services s
 JOIN auth.users u ON u.id = s.user_id
 WHERE s.tipo_servico = 'Serviço opcional'
-  AND s.categoria IN ('Clareamento', 'Facetas', 'Geral')
+  AND s.categoria IN ('🦷 Clareamento Dentário', '💎 Facetas Dentárias', '🔧 Serviços Gerais de Suporte')
 ORDER BY u.email, s.categoria, s.name
 LIMIT 20;

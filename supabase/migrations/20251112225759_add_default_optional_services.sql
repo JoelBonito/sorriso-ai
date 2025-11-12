@@ -1,6 +1,20 @@
 -- Adicionar serviços opcionais padrão para todos os usuários
 -- Esta migration adiciona serviços comuns de consultórios odontológicos
 
+-- Primeiro, criar as categorias para todos os usuários
+INSERT INTO public.service_categories (user_id, name)
+SELECT
+  u.id as user_id,
+  categoria.name
+FROM auth.users u
+CROSS JOIN (
+  VALUES
+    ('🦷 Clareamento Dentário'),
+    ('💎 Facetas Dentárias'),
+    ('🔧 Serviços Gerais de Suporte')
+) AS categoria(name)
+ON CONFLICT (user_id, name) DO NOTHING;
+
 -- Inserir serviços de Clareamento para cada usuário existente
 INSERT INTO public.services (user_id, name, description, tipo_servico, categoria, price, active, required, base)
 SELECT
@@ -8,7 +22,7 @@ SELECT
   servico.name,
   servico.description,
   'Serviço opcional' as tipo_servico,
-  'Clareamento' as categoria,
+  '🦷 Clareamento Dentário' as categoria,
   servico.price,
   true as active,
   false as required,
@@ -34,7 +48,7 @@ SELECT
   servico.name,
   servico.description,
   'Serviço opcional' as tipo_servico,
-  'Facetas' as categoria,
+  '💎 Facetas Dentárias' as categoria,
   servico.price,
   true as active,
   false as required,
@@ -63,7 +77,7 @@ SELECT
   servico.name,
   servico.description,
   'Serviço opcional' as tipo_servico,
-  'Geral' as categoria,
+  '🔧 Serviços Gerais de Suporte' as categoria,
   servico.price,
   true as active,
   false as required,
@@ -76,20 +90,6 @@ CROSS JOIN (
     ('Retorno/ajuste pós-procedimento', 'Consulta de retorno para avaliação e ajustes após procedimentos realizados', 50.00)
 ) AS servico(name, description, price)
 ON CONFLICT DO NOTHING;
-
--- Adicionar categorias à tabela de sugestões (se a tabela existir)
-INSERT INTO public.service_categories (user_id, name)
-SELECT
-  u.id as user_id,
-  categoria.name
-FROM auth.users u
-CROSS JOIN (
-  VALUES
-    ('Clareamento'),
-    ('Facetas'),
-    ('Geral')
-) AS categoria(name)
-ON CONFLICT (user_id, name) DO NOTHING;
 
 -- Adicionar comentário explicativo
 COMMENT ON TABLE public.services IS 'Tabela de serviços odontológicos com categorização e preços por usuário';

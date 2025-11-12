@@ -66,11 +66,19 @@ supabase db push
 Todos os serviços são inseridos com as seguintes características:
 
 - **tipo_servico**: `Serviço opcional`
-- **categoria**: `Clareamento`, `Facetas` ou `Geral`
+- **categoria**: `🦷 Clareamento Dentário`, `💎 Facetas Dentárias` ou `🔧 Serviços Gerais de Suporte`
 - **active**: `true` (ativo por padrão)
 - **required**: `false` (não obrigatório)
 - **base**: `false` (não é serviço base)
 - **user_id**: Criado para cada usuário existente
+
+## Categorias Criadas
+
+A migration também cria as 3 categorias na tabela `service_categories` para todos os usuários:
+
+1. **🦷 Clareamento Dentário** - Serviços relacionados a clareamento dental
+2. **💎 Facetas Dentárias** - Serviços relacionados a facetas e estética dental
+3. **🔧 Serviços Gerais de Suporte** - Serviços auxiliares e de diagnóstico
 
 ## Verificação
 
@@ -83,14 +91,14 @@ SELECT
   COUNT(*) as total_servicos
 FROM public.services
 WHERE tipo_servico = 'Serviço opcional'
-  AND categoria IN ('Clareamento', 'Facetas', 'Geral')
+  AND categoria IN ('🦷 Clareamento Dentário', '💎 Facetas Dentárias', '🔧 Serviços Gerais de Suporte')
 GROUP BY categoria;
 ```
 
 **Resultado esperado:**
-- Clareamento: 8 serviços × número de usuários
-- Facetas: 11 serviços × número de usuários
-- Geral: 3 serviços × número de usuários
+- 🦷 Clareamento Dentário: 8 serviços × número de usuários
+- 💎 Facetas Dentárias: 11 serviços × número de usuários
+- 🔧 Serviços Gerais de Suporte: 3 serviços × número de usuários
 
 ### Verificar seus serviços
 ```sql
