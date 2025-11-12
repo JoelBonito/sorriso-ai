@@ -44,7 +44,7 @@ export async function generateTechnicalReportPDF(data: TechnicalReportData): Pro
   };
 
   // 3. Preparar imagens de simulação (se disponível)
-  const simulationImages = formatSimulationImages(
+  const simulationImages = await formatSimulationImages(
     data.beforeImage,
     data.afterImage
   );

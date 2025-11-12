@@ -7,22 +7,66 @@ import { supabase } from '@/integrations/supabase/client';
 import { ClinicInfo, PatientInfo, SimulationImages } from '@/components/pdf/shared/types';
 
 /**
+ * Converte uma URL de imagem para base64
+ * Necessário porque React-PDF tem problemas com URLs externas (CORS)
+ */
+async function imageUrlToBase64(url: string): Promise<string> {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('❌ Erro ao converter imagem para base64:', error);
+    return ''; // Retorna vazio se falhar
+  }
+}
+
+/**
  * Busca e formata informações da clínica do usuário logado
+ * Cria user_configs automaticamente se não existir
  */
 export async function getClinicInfo(): Promise<ClinicInfo> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Usuário não autenticado');
 
   // Buscar configurações do usuário
-  const { data: userConfig } = await supabase
+  let { data: userConfig } = await supabase
     .from('user_configs')
     .select('*')
     .eq('user_id', user.id)
     .maybeSingle();
 
-  // Retornar valores padrão se não houver configuração
+  // Se não existir, criar com valores padrão
   if (!userConfig) {
-    console.warn('⚠️ user_configs não encontrado, usando valores padrão');
+    console.log('📝 Criando user_configs para o usuário:', user.id);
+
+    const { data: newConfig, error } = await supabase
+      .from('user_configs')
+      .insert({
+        user_id: user.id,
+        user_email: user.email,
+        clinic_name: 'Clínica Odontológica',
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Erro ao criar user_configs:', error);
+      // Continuar com valores padrão
+    } else {
+      userConfig = newConfig;
+    }
+  }
+
+  // Se ainda não houver configuração (erro na criação), usar valores padrão
+  if (!userConfig) {
+    console.warn('⚠️ Usando valores padrão para clínica');
     return {
       name: 'Clínica Odontológica',
       cnpj: '-',
@@ -38,6 +82,13 @@ export async function getClinicInfo(): Promise<ClinicInfo> {
     };
   }
 
+  // Converter logo para base64 se existir
+  let logoBase64 = '';
+  if (userConfig.clinic_logo_url && userConfig.clinic_logo_url.trim() !== '') {
+    console.log('🖼️ Convertendo logo da clínica para base64...');
+    logoBase64 = await imageUrlToBase64(userConfig.clinic_logo_url);
+  }
+
   return {
     name: userConfig.clinic_name || 'Clínica Odontológica',
     cnpj: userConfig.clinic_cnpj || '-',
@@ -47,7 +98,7 @@ export async function getClinicInfo(): Promise<ClinicInfo> {
     zipCode: userConfig.clinic_zip_code || '-',
     city: userConfig.clinic_city || '-',
     state: userConfig.clinic_state || '-',
-    logoUrl: userConfig.clinic_logo_url || '',
+    logoUrl: logoBase64, // Já em base64
     dentistName: userConfig.clinic_dentist_name || 'Dentista Responsável',
     cro: userConfig.clinic_cro || '-'
   };
@@ -66,19 +117,33 @@ export function formatPatientInfo(patient: any): PatientInfo {
 }
 
 /**
- * Formata URLs de imagens de simulação
+ * Formata URLs de imagens de simulação e converte para base64
+ * Necessário porque React-PDF tem problemas com URLs externas (CORS)
  */
-export function formatSimulationImages(
+export async function formatSimulationImages(
   beforeUrl?: string | null,
   afterUrl?: string | null
-): SimulationImages | undefined {
-  if (!beforeUrl || !afterUrl) {
+): Promise<SimulationImages | undefined> {
+  if (!beforeUrl && !afterUrl) {
+    return undefined;
+  }
+
+  console.log('🖼️ Convertendo imagens de simulação para base64...');
+
+  // Converter imagens para base64 em paralelo
+  const [beforeBase64, afterBase64] = await Promise.all([
+    beforeUrl ? imageUrlToBase64(beforeUrl) : Promise.resolve(''),
+    afterUrl ? imageUrlToBase64(afterUrl) : Promise.resolve('')
+  ]);
+
+  // Se nenhuma das duas conversões funcionou, retornar undefined
+  if (!beforeBase64 && !afterBase64) {
     return undefined;
   }
 
   return {
-    beforeUrl,
-    afterUrl
+    beforeUrl: beforeBase64,
+    afterUrl: afterBase64
   };
 }
 

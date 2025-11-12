@@ -592,7 +592,7 @@ export async function generateBudgetPDF(budgetId: string): Promise<string> {
 
   // 4. Preparar imagens de simulação (se disponível)
   const simulationData = Array.isArray(budget.simulation) ? budget.simulation[0] : budget.simulation;
-  const simulationImages = formatSimulationImages(
+  const simulationImages = await formatSimulationImages(
     simulationData?.original_image_url,
     simulationData?.processed_image_url
   );
