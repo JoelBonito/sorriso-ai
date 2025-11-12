@@ -41,10 +41,108 @@ export interface TechnicalReportPDFProps extends BasePDFProps {
 }
 
 /**
+ * Componente interno: Conteúdo do Relatório
+ */
+const ReportContent: React.FC<{ reportContent: string; teethCount?: number }> = ({
+  reportContent,
+  teethCount
+}) => {
+  // Quebrar o conteúdo em parágrafos (linhas vazias separam parágrafos)
+  const paragraphs = reportContent
+    .split('\n\n')
+    .filter(p => p.trim().length > 0);
+
+  return (
+    <View style={commonStyles.section}>
+      <Text style={commonStyles.sectionTitle}>RELATÓRIO CLÍNICO DETALHADO</Text>
+
+      {teethCount && (
+        <View style={{ marginTop: 8, marginBottom: 10 }}>
+          <Text style={{ fontSize: 9, color: '#6B7280' }}>
+            Número de dentes analisados: <Text style={{ fontWeight: 'bold', color: '#1F2937' }}>{teethCount}</Text>
+          </Text>
+        </View>
+      )}
+
+      <View style={{ marginTop: 10 }}>
+        {paragraphs.map((paragraph, index) => (
+          <Text
+            key={index}
+            style={{
+              fontSize: 9,
+              lineHeight: 1.6,
+              textAlign: 'justify',
+              marginBottom: 8,
+              color: '#374151'
+            }}
+          >
+            {paragraph.trim()}
+          </Text>
+        ))}
+      </View>
+    </View>
+  );
+};
+
+/**
+ * Componente interno: Página de Disclaimers Legais
+ */
+const DisclaimersPage: React.FC = () => {
+  const disclaimers = [
+    'Este relatório é baseado em análise de imagem e tem caráter orientativo',
+    'Avaliação clínica presencial é OBRIGATÓRIA antes de qualquer procedimento',
+    'Exames complementares podem ser necessários (radiografias, modelos de estudo)',
+    'O planejamento definitivo pode variar após avaliação completa do paciente',
+    'Este documento não substitui consulta odontológica presencial'
+  ];
+
+  return (
+    <View>
+      <View style={commonStyles.warningBox}>
+        <Text style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 8, color: '#92400E' }}>
+          IMPORTANTE - DISCLAIMER PROFISSIONAL
+        </Text>
+
+        {disclaimers.map((disclaimer, index) => (
+          <View key={index} style={{ flexDirection: 'row', marginBottom: 5 }}>
+            <Text style={{ fontSize: 9, color: '#78350F', marginRight: 5 }}>•</Text>
+            <Text style={{ fontSize: 9, color: '#78350F', flex: 1, lineHeight: 1.5 }}>
+              {disclaimer}
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      <View style={{ marginTop: 20 }}>
+        <Text style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 10, color: '#1F2937' }}>
+          OBSERVAÇÕES TÉCNICAS
+        </Text>
+
+        <Text style={{ fontSize: 9, lineHeight: 1.6, textAlign: 'justify', color: '#4B5563', marginBottom: 8 }}>
+          A análise foi realizada utilizando inteligência artificial treinada especificamente para
+          avaliação de tratamentos estéticos dentários com facetas. Os resultados apresentados
+          consideram fatores como simetria, proporção, alinhamento e coloração dentária.
+        </Text>
+
+        <Text style={{ fontSize: 9, lineHeight: 1.6, textAlign: 'justify', color: '#4B5563', marginBottom: 8 }}>
+          É fundamental que o profissional dentista realize uma avaliação presencial completa,
+          incluindo anamnese detalhada, exame clínico, fotografias intraorais e extraorais,
+          moldagens quando necessário, e análise radiográfica para confirmar a viabilidade e
+          segurança do tratamento proposto.
+        </Text>
+
+        <Text style={{ fontSize: 9, lineHeight: 1.6, textAlign: 'justify', color: '#4B5563' }}>
+          Este relatório tem função exclusivamente educativa e de planejamento preliminar,
+          servindo como ferramenta auxiliar para a comunicação entre profissional e paciente
+          sobre as possibilidades de tratamento estético dental.
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+/**
  * Componente de documento PDF para relatórios técnicos
- *
- * NOTA: Esta é a versão STUB - implementação completa será feita na Fase 3
- * Por enquanto, apenas mostra a estrutura básica com os componentes compartilhados
  */
 export const TechnicalReportPDFDocument: React.FC<TechnicalReportPDFProps> = ({
   clinicInfo,
@@ -79,19 +177,11 @@ export const TechnicalReportPDFDocument: React.FC<TechnicalReportPDFProps> = ({
           />
         )}
 
-        {/* 4. CONTEÚDO DO RELATÓRIO - será implementado na Fase 3 */}
-        <View style={commonStyles.section}>
-          <Text style={commonStyles.sectionTitle}>RELATÓRIO CLÍNICO DETALHADO</Text>
-          <Text style={{ fontSize: 9, color: '#6B7280', marginTop: 10 }}>
-            [CONTEÚDO DO RELATÓRIO - será implementado na Fase 3]
-          </Text>
-          <Text style={{ fontSize: 8, marginTop: 5 }}>
-            Dentes analisados: {teethCount || 'N/A'}
-          </Text>
-          <Text style={{ fontSize: 8, marginTop: 3 }}>
-            Tamanho do conteúdo: {reportContent.length} caracteres
-          </Text>
-        </View>
+        {/* 4. CONTEÚDO DO RELATÓRIO */}
+        <ReportContent
+          reportContent={reportContent}
+          teethCount={teethCount}
+        />
 
         {/* 5. Rodapé */}
         <PDFFooter
@@ -101,16 +191,15 @@ export const TechnicalReportPDFDocument: React.FC<TechnicalReportPDFProps> = ({
         />
       </Page>
 
-      {/* PÁGINA 2: DISCLAIMERS - será implementado na Fase 3 */}
+      {/* PÁGINA 2: DISCLAIMERS LEGAIS */}
       <Page size="A4" style={commonStyles.page}>
-        <View style={commonStyles.warningBox}>
-          <Text style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 8 }}>
-            IMPORTANTE - DISCLAIMER PROFISSIONAL
-          </Text>
-          <Text style={{ fontSize: 8 }}>
-            [DISCLAIMERS LEGAIS - será implementado na Fase 3]
-          </Text>
-        </View>
+        <DisclaimersPage />
+
+        {/* Rodapé na página de disclaimers */}
+        <PDFFooter
+          dentistName={clinicInfo.dentistName}
+          cro={clinicInfo.cro}
+        />
       </Page>
     </Document>
   );
