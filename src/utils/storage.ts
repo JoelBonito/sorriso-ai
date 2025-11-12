@@ -137,7 +137,7 @@ export async function saveConfig(config: Config): Promise<void> {
       crm_enabled: config.crmEnabled,
       facets_simulator_enabled: config.facetsSimulatorEnabled ?? true,
       whitening_simulator_enabled: config.whiteningSimulatorEnabled ?? true,
-    }, { onConflict: 'user_id' });
+    } as any, { onConflict: 'user_id' });
 
   if (error) throw error;
 }
