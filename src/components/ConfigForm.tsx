@@ -63,18 +63,21 @@ export default function ConfigForm() {
   }, []);
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.apiKey || formData.apiKey.length < 20) {
+
+    // API Key e Backend URL são opcionais agora
+    // Apenas validar formato SE foram preenchidos
+    if (formData.apiKey && formData.apiKey.length < 20) {
       newErrors.apiKey = "API Key inválida (mínimo 20 caracteres)";
     }
-    if (!formData.backendUrl) {
-      newErrors.backendUrl = "URL do backend é obrigatória";
-    } else {
+    if (formData.backendUrl) {
       try {
         new URL(formData.backendUrl);
       } catch {
         newErrors.backendUrl = "URL inválida";
       }
     }
+
+    // Validações de parâmetros avançados (apenas se preenchidos)
     if (formData.temperature < 0 || formData.temperature > 1) {
       newErrors.temperature = "Temperature deve estar entre 0 e 1";
     }
@@ -87,10 +90,19 @@ export default function ConfigForm() {
     if (formData.maxTokens <= 0) {
       newErrors.maxTokens = "Max Tokens deve ser maior que 0";
     }
-    if (!formData.promptTemplate.trim()) {
-      newErrors.promptTemplate = "Template do prompt é obrigatório";
-    }
+
+    // Prompt template é opcional (pode estar vazio)
+    // if (!formData.promptTemplate.trim()) {
+    //   newErrors.promptTemplate = "Template do prompt é obrigatório";
+    // }
+
     setErrors(newErrors);
+
+    // Log para debug
+    if (Object.keys(newErrors).length > 0) {
+      console.log('❌ Erros de validação:', newErrors);
+    }
+
     return Object.keys(newErrors).length === 0;
   };
   const handleSubmit = async (e: React.FormEvent) => {
