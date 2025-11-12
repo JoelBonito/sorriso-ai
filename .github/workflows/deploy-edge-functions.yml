@@ -33,35 +33,15 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
         run: |
-          echo "🚀 Deploying all Edge Functions to Supabase..."
+          echo "🚀 Deploying Edge Functions to Supabase..."
           
           # Deploy process-dental-facets
           echo "📦 Deploying process-dental-facets..."
           supabase functions deploy process-dental-facets --no-verify-jwt
           
-          # Deploy generate-document
-          echo "📦 Deploying generate-document..."
-          supabase functions deploy generate-document --no-verify-jwt
-          
-          # Deploy generate-report-pdf
-          echo "📦 Deploying generate-report-pdf..."
-          supabase functions deploy generate-report-pdf --no-verify-jwt
-          
-          # Deploy notify-on-insert
-          echo "📦 Deploying notify-on-insert..."
-          supabase functions deploy notify-on-insert --no-verify-jwt
-          
           # Deploy generate-budget-pdf
           echo "📦 Deploying generate-budget-pdf..."
           supabase functions deploy generate-budget-pdf --no-verify-jwt
-          
-          # Deploy hyper-worker
-          echo "📦 Deploying hyper-worker..."
-          supabase functions deploy hyper-worker --no-verify-jwt
-          
-          # Deploy bright-api
-          echo "📦 Deploying bright-api..."
-          supabase functions deploy bright-api --no-verify-jwt
           
           echo "✅ All Edge Functions deployed successfully!"
 
