@@ -45,12 +45,35 @@ serve(async (req) => {
       .from('user_configs')
       .select('*')
       .eq('user_id', budget.user_id)
-      .single()
+      .maybeSingle()
 
-    if (configError) throw configError
+    // Se não houver configurações, usar valores padrão
+    // Isso previne falha se a tabela user_configs não existir ou estiver vazia
+    if (configError) {
+      console.warn('⚠️ Erro ao buscar user_configs, usando valores padrão:', configError.message)
+    }
+
+    const config = userConfig || {
+      clinic_name: 'Clínica Odontológica',
+      clinic_cnpj: '-',
+      clinic_address: '-',
+      clinic_phone: '-',
+      clinic_email: '-',
+      clinic_logo_url: '',
+      clinic_zip_code: '-',
+      clinic_city: '-',
+      clinic_state: '-',
+      clinic_dentist_name: '-',
+      clinic_cro: '-',
+      payment_config: {
+        discount_cash: 10,
+        discount_pix: 5,
+        max_installments: 12
+      }
+    }
 
     // 3. Gerar dados do template
-    const templateData = generateTemplateData(budget, userConfig)
+    const templateData = generateTemplateData(budget, config)
 
     // 4. Carregar template
     const template = await loadTemplate()
