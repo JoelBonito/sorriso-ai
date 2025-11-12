@@ -17,7 +17,7 @@ import { useServices } from '@/hooks/useServices';
 import { useConfig } from '@/contexts/ConfigContext';
 import { supabase } from '@/integrations/supabase/client';
 import { createBudget, generateBudgetPDF } from '@/services/budgetService';
-import { generateBudgetNumber } from '@/services/pdfService';
+import { generateBudgetNumber } from '@/services/budgetService';
 import { formatCurrency } from '@/utils/formatters';
 import {
   notifySimulationCompleted,
