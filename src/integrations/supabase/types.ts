@@ -669,11 +669,14 @@ export type Database = {
       }
       user_configs: {
         Row: {
-          api_key: string
-          backend_url: string
+          api_key: string | null
+          backend_url: string | null
           claude_api_key: string | null
           clinic_address: string | null
           clinic_city: string | null
+          clinic_cnpj: string | null
+          clinic_cro: string | null
+          clinic_dentist_name: string | null
           clinic_email: string | null
           clinic_logo_url: string | null
           clinic_name: string | null
@@ -685,8 +688,9 @@ export type Database = {
           facets_simulator_enabled: boolean | null
           id: string
           max_tokens: number
+          payment_config: Json | null
           profile_picture_url: string | null
-          prompt_template: string
+          prompt_template: string | null
           temperature: number
           top_k: number
           top_p: number
@@ -699,11 +703,14 @@ export type Database = {
           whitening_simulator_enabled: boolean | null
         }
         Insert: {
-          api_key: string
-          backend_url: string
+          api_key?: string | null
+          backend_url?: string | null
           claude_api_key?: string | null
           clinic_address?: string | null
           clinic_city?: string | null
+          clinic_cnpj?: string | null
+          clinic_cro?: string | null
+          clinic_dentist_name?: string | null
           clinic_email?: string | null
           clinic_logo_url?: string | null
           clinic_name?: string | null
@@ -715,8 +722,9 @@ export type Database = {
           facets_simulator_enabled?: boolean | null
           id?: string
           max_tokens?: number
+          payment_config?: Json | null
           profile_picture_url?: string | null
-          prompt_template: string
+          prompt_template?: string | null
           temperature?: number
           top_k?: number
           top_p?: number
@@ -729,11 +737,14 @@ export type Database = {
           whitening_simulator_enabled?: boolean | null
         }
         Update: {
-          api_key?: string
-          backend_url?: string
+          api_key?: string | null
+          backend_url?: string | null
           claude_api_key?: string | null
           clinic_address?: string | null
           clinic_city?: string | null
+          clinic_cnpj?: string | null
+          clinic_cro?: string | null
+          clinic_dentist_name?: string | null
           clinic_email?: string | null
           clinic_logo_url?: string | null
           clinic_name?: string | null
@@ -745,8 +756,9 @@ export type Database = {
           facets_simulator_enabled?: boolean | null
           id?: string
           max_tokens?: number
+          payment_config?: Json | null
           profile_picture_url?: string | null
-          prompt_template?: string
+          prompt_template?: string | null
           temperature?: number
           top_k?: number
           top_p?: number
