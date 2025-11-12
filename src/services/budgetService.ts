@@ -2,6 +2,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { addDays } from 'date-fns';
 import { generateBudgetNumber } from './pdfService';
 import { notifyBudgetStatusChanged } from './notificationService';
+import { generateBudgetPDFBlob, BudgetItem, PaymentConditions } from './pdfGenerators';
+import { getClinicInfo, formatPatientInfo, formatSimulationImages } from './pdfHelpers';
 
 // FASE 3: Definir type union explícito para BudgetStatus
 export type BudgetStatus = 
@@ -546,25 +548,133 @@ export async function getPatientBudgets(patientId: string): Promise<Budget[]> {
 }
 
 /**
- * Gera PDF do orçamento chamando Edge Function
+ * Gera PDF do orçamento usando React-PDF no frontend
  * @param budgetId - ID do orçamento
  * @returns URL do PDF gerado
  */
 export async function generateBudgetPDF(budgetId: string): Promise<string> {
-  const { data, error } = await supabase.functions.invoke('generate-budget-pdf', {
-    body: { budgetId }
+  console.log('📄 Gerando PDF do orçamento com React-PDF...', budgetId);
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Usuário não autenticado');
+
+  // 1. Buscar dados do orçamento com relacionamentos
+  const { data: budget, error: budgetError } = await supabase
+    .from('budgets')
+    .select(`
+      *,
+      patient:patients(*),
+      simulation:simulations(*)
+    `)
+    .eq('id', budgetId)
+    .single();
+
+  if (budgetError || !budget) {
+    console.error('❌ Erro ao buscar orçamento:', budgetError);
+    throw new Error('Orçamento não encontrado');
+  }
+
+  // 2. Buscar informações da clínica
+  const clinicInfo = await getClinicInfo();
+
+  // 3. Preparar dados do paciente
+  const patientData = Array.isArray(budget.patient) ? budget.patient[0] : budget.patient;
+  const patientInfo = formatPatientInfo(patientData);
+
+  // 4. Preparar imagens de simulação (se disponível)
+  const simulationData = Array.isArray(budget.simulation) ? budget.simulation[0] : budget.simulation;
+  const simulationImages = formatSimulationImages(
+    simulationData?.original_image_url,
+    simulationData?.processed_image_url
+  );
+
+  // 5. Preparar items do orçamento
+  const items: BudgetItem[] = (budget.items || []).map((item: any) => ({
+    servico: item.servico || item.name || 'Procedimento',
+    dentes: item.dentes || item.teeth,
+    quantidade: item.quantidade || item.quantity || 1,
+    valor_unitario: item.valor_unitario || item.unit_price || 0,
+    valor_total: item.valor_total || (item.quantidade || 1) * (item.valor_unitario || item.unit_price || 0)
+  }));
+
+  // Se não houver items, criar um item genérico baseado nos valores do budget
+  if (items.length === 0) {
+    items.push({
+      servico: budget.treatment_type === 'clareamento' ? 'Clareamento Dental' : 'Facetas Dentárias',
+      dentes: budget.teeth_count ? `${budget.teeth_count} dentes` : '-',
+      quantidade: budget.teeth_count || 1,
+      valor_unitario: budget.price_per_tooth || 0,
+      valor_total: budget.subtotal || 0
+    });
+  }
+
+  // 6. Preparar condições de pagamento
+  const paymentConfig = budget.payment_conditions || {
+    discount_cash: 10,
+    discount_pix: 5,
+    max_installments: 12
+  };
+
+  const paymentConditions: PaymentConditions = {
+    discountCash: paymentConfig.discount_cash || 10,
+    discountPix: paymentConfig.discount_pix || 5,
+    maxInstallments: paymentConfig.max_installments || 12,
+    installmentValue: budget.final_price / (paymentConfig.max_installments || 12),
+    cashPrice: budget.final_price * (1 - (paymentConfig.discount_cash || 10) / 100)
+  };
+
+  // 7. Gerar PDF com React-PDF
+  console.log('🎨 Renderizando PDF com React-PDF...');
+  const blob = await generateBudgetPDFBlob({
+    clinicInfo,
+    patientInfo,
+    simulationImages,
+    date: new Date(),
+    budgetNumber: budget.budget_number,
+    items,
+    subtotal: budget.subtotal,
+    discount: budget.discount_amount || 0,
+    total: budget.final_price,
+    paymentConditions
   });
 
-  if (error) {
-    console.error('❌ Erro ao gerar PDF:', error);
-    throw new Error(error.message || 'Erro ao gerar PDF do orçamento');
+  console.log('✅ PDF gerado, tamanho:', (blob.size / 1024).toFixed(2), 'KB');
+
+  // 8. Upload para Supabase Storage
+  const fileName = `${user.id}/${budgetId}-${Date.now()}.pdf`;
+
+  console.log('📤 Fazendo upload do PDF para:', fileName);
+  const { error: uploadError } = await supabase.storage
+    .from('budgets')
+    .upload(fileName, blob, {
+      contentType: 'application/pdf',
+      upsert: true
+    });
+
+  if (uploadError) {
+    console.error('❌ Erro ao fazer upload do PDF:', uploadError);
+    throw new Error(`Erro ao fazer upload: ${uploadError.message}`);
   }
 
-  if (!data || !data.pdf_url) {
-    throw new Error('PDF gerado mas URL não retornada');
+  // 9. Obter URL pública
+  const { data: urlData } = supabase.storage
+    .from('budgets')
+    .getPublicUrl(fileName);
+
+  const pdfUrl = urlData.publicUrl;
+  console.log('✅ PDF disponível em:', pdfUrl);
+
+  // 10. Atualizar budget com pdf_url
+  const { error: updateError } = await supabase
+    .from('budgets')
+    .update({ pdf_url: pdfUrl })
+    .eq('id', budgetId);
+
+  if (updateError) {
+    console.error('⚠️ Erro ao atualizar budget com pdf_url:', updateError);
   }
 
-  return data.pdf_url;
+  return pdfUrl;
 }
 
 /**
