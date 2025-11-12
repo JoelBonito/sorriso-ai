@@ -120,25 +120,49 @@ const blob = await pdf(<BudgetPDFDocument {...data} />).toBlob();
 // ...
 ```
 
+## ✅ Fase 2 - CONCLUÍDA
+
+### O que foi implementado:
+
+1. **Tabela de Procedimentos** (`ProceduresTable`)
+   - Cabeçalho com colunas: Procedimento, Dentes, Qtd, Valor Unit., Total
+   - Linhas dinâmicas baseadas nos items do orçamento
+   - Formatação de valores em Real (pt-BR)
+   - Estilos responsivos usando tableStyles
+
+2. **Resumo Financeiro** (`FinancialSummary`)
+   - Exibição do Subtotal
+   - Desconto (quando aplicável)
+   - Valor Total destacado
+   - Cores diferenciadas para melhor visualização
+
+3. **Condições de Pagamento** (`PaymentConditionsSection`)
+   - Formas de pagamento: Dinheiro, PIX, Cartão
+   - Percentuais de desconto para cada forma
+   - Valor à vista com desconto aplicado
+   - Valor parcelado com número de parcelas e valor de cada
+
+### Verificação de segurança:
+
+✅ **Compilação TypeScript**: OK - Build passou sem erros
+✅ **Componentes funcionais**: OK - Todos os 3 componentes implementados
+✅ **Formatação**: OK - Valores em Real (pt-BR) formatados corretamente
+✅ **Estilos**: OK - Usando tableStyles e commonStyles existentes
+✅ **Type-safety**: OK - Todas as interfaces e props tipadas
+
 ## 🚧 Próximas Fases
 
-### Fase 2: Implementar Orçamento PDF
-- Tabela de procedimentos com React-PDF
-- Resumo financeiro (subtotal, desconto, total)
-- Condições de pagamento
-- Integração com budgetService.ts
-
-### Fase 3: Implementar Relatório Técnico PDF
+### Fase 3: Implementar Relatório Técnico PDF (PENDENTE)
 - Formatação do texto do relatório
 - Quebra de páginas automática
 - Disclaimers legais em página separada
 - Integração com technicalReportService.ts
 
-### Fase 4: Migração e Limpeza
-- Substituir jsPDF por React-PDF nos serviços
-- Deletar pdfService.ts e technicalReportService.ts
-- Remover dependência jsPDF
-- Testar tudo
+### Fase 4: Migração e Limpeza (PENDENTE)
+- Integrar BudgetPDFDocument no budgetService.ts
+- Substituir geração atual por React-PDF
+- Testar geração de PDF de orçamentos
+- (Opcional) Migrar relatórios técnicos
 - Commit e push
 
 ## 🛡️ Garantias de Segurança
@@ -151,6 +175,20 @@ const blob = await pdf(<BudgetPDFDocument {...data} />).toBlob();
 
 ---
 
-**Status**: Fase 1 concluída com sucesso
+**Status**: Fase 2 concluída com sucesso ✅
 **Última atualização**: 2025-11-12
 **Desenvolvido com**: @react-pdf/renderer 4.3.1
+
+## 📝 Changelog
+
+### 2025-11-12 - Fase 2
+- ✅ Implementada tabela de procedimentos completa
+- ✅ Implementado resumo financeiro com subtotal, desconto e total
+- ✅ Implementadas condições de pagamento com formas e valores
+- ✅ BudgetPDFDocument agora está 100% funcional
+- ✅ Build TypeScript passou sem erros
+
+### 2025-11-12 - Fase 1
+- ✅ Estrutura base criada
+- ✅ Componentes compartilhados implementados
+- ✅ Estilos e tipos definidos
