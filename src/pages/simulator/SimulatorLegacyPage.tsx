@@ -16,7 +16,8 @@ import { QuickPatientForm } from "@/components/QuickPatientForm";
 import { PDFViewerModal } from "@/components/PDFViewerModal";
 import { hasConfig, getConfig } from "@/utils/storage";
 import { getTimestamp } from "@/utils/formatters";
-import { generateBudgetPDF, generateBudgetNumber } from "@/services/pdfService";
+import { generateBudgetNumber } from "@/services/budgetService";
+// NOTA: generateBudgetPDF foi removido de pdfService (agora usa React-PDF)
 import { getPatientById } from "@/services/patientService";
 import { usePatientForm } from "@/hooks/usePatientForm";
 import { generateTechnicalReportPDF, generateReportNumber } from "@/services/technicalReportService";

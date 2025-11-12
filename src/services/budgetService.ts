@@ -1,9 +1,18 @@
 import { supabase } from '@/integrations/supabase/client';
 import { addDays } from 'date-fns';
-import { generateBudgetNumber } from './pdfService';
 import { notifyBudgetStatusChanged } from './notificationService';
 import { generateBudgetPDFBlob, BudgetItem, PaymentConditions } from './pdfGenerators';
 import { getClinicInfo, formatPatientInfo, formatSimulationImages } from './pdfHelpers';
+
+/**
+ * Gera número único de orçamento no formato ORCAM-YYYYMM-XXXX
+ */
+export function generateBudgetNumber(): string {
+  const year = new Date().getFullYear();
+  const month = String(new Date().getMonth() + 1).padStart(2, '0');
+  const random = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
+  return `ORCAM-${year}${month}-${random}`;
+}
 
 // FASE 3: Definir type union explícito para BudgetStatus
 export type BudgetStatus = 
