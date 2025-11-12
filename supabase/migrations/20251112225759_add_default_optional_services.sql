@@ -1,16 +1,7 @@
--- =========================================================================
--- MIGRATION: Adicionar Serviços Opcionais Padrão
--- =========================================================================
--- Execute este SQL no Supabase SQL Editor
--- Dashboard: https://supabase.com/dashboard/project/hqexulgmmtghwtgnqtfy/sql
---
--- Esta migration adiciona 22 serviços opcionais padrão para todos os usuários:
--- - 8 serviços de 🦷 Clareamento Dentário
--- - 11 serviços de 💎 Facetas Dentárias
--- - 3 serviços de 🔧 Serviços Gerais de Suporte
--- =========================================================================
+-- Adicionar serviços opcionais padrão para todos os usuários
+-- Esta migration adiciona serviços comuns de consultórios odontológicos
 
--- 0. CRIAR CATEGORIAS
+-- Primeiro, criar as categorias para todos os usuários
 INSERT INTO public.service_categories (user_id, name)
 SELECT
   u.id as user_id,
@@ -24,7 +15,7 @@ CROSS JOIN (
 ) AS categoria(name)
 ON CONFLICT (user_id, name) DO NOTHING;
 
--- 1. SERVIÇOS DE CLAREAMENTO (8 serviços)
+-- Inserir serviços de Clareamento para cada usuário existente
 INSERT INTO public.services (user_id, name, description, tipo_servico, categoria, price, active, required, base)
 SELECT
   u.id as user_id,
@@ -50,7 +41,7 @@ CROSS JOIN (
 ) AS servico(name, description, price)
 ON CONFLICT DO NOTHING;
 
--- 2. SERVIÇOS DE FACETAS (11 serviços)
+-- Inserir serviços de Facetas para cada usuário existente
 INSERT INTO public.services (user_id, name, description, tipo_servico, categoria, price, active, required, base)
 SELECT
   u.id as user_id,
@@ -79,7 +70,7 @@ CROSS JOIN (
 ) AS servico(name, description, price)
 ON CONFLICT DO NOTHING;
 
--- 3. SERVIÇOS GERAIS DE SUPORTE (3 serviços)
+-- Inserir serviços gerais de suporte para cada usuário existente
 INSERT INTO public.services (user_id, name, description, tipo_servico, categoria, price, active, required, base)
 SELECT
   u.id as user_id,
@@ -100,28 +91,5 @@ CROSS JOIN (
 ) AS servico(name, description, price)
 ON CONFLICT DO NOTHING;
 
--- =========================================================================
--- VERIFICAÇÃO: Consultar serviços inseridos
--- =========================================================================
-SELECT
-  categoria,
-  COUNT(*) as total_servicos,
-  COUNT(DISTINCT user_id) as total_usuarios
-FROM public.services
-WHERE tipo_servico = 'Serviço opcional'
-  AND categoria IN ('🦷 Clareamento Dentário', '💎 Facetas Dentárias', '🔧 Serviços Gerais de Suporte')
-GROUP BY categoria
-ORDER BY categoria;
-
--- Mostrar alguns exemplos
-SELECT
-  u.email,
-  s.categoria,
-  s.name,
-  s.price
-FROM public.services s
-JOIN auth.users u ON u.id = s.user_id
-WHERE s.tipo_servico = 'Serviço opcional'
-  AND s.categoria IN ('🦷 Clareamento Dentário', '💎 Facetas Dentárias', '🔧 Serviços Gerais de Suporte')
-ORDER BY u.email, s.categoria, s.name
-LIMIT 20;
+-- Adicionar comentário explicativo
+COMMENT ON TABLE public.services IS 'Tabela de serviços odontológicos com categorização e preços por usuário';
